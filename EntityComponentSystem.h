@@ -1,0 +1,14 @@
+//
+// Created by itmosha on 30.05.22.
+//
+
+#ifndef NEWPROJECT_ENTITYCOMPONENTSYSTEM_H
+#define NEWPROJECT_ENTITYCOMPONENTSYSTEM_H
+
+
+class EntityComponentSystem {
+
+};
+
+
+#endif //NEWPROJECT_ENTITYCOMPONENTSYSTEM_H
