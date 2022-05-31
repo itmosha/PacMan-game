@@ -7,7 +7,7 @@ public:
     GameObject(const char* texturesheet, int x, int y);
     ~GameObject();
 
-    void Update(int sourceH, int sourceW, int sourceX, int sourceY);
+    void Update(int H, int W, int sourceX, int sourceY, int destX, int destY);
     void Render();
 private:
     int xPos;

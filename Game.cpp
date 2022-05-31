@@ -3,6 +3,10 @@
 #include "Map.h"
 #include "GameObject.h"
 
+const int PLAYER_SPEED = 2;
+int direction = 0;
+int playerX = 430, playerY = 685;
+
 SDL_Renderer* Game::renderer = nullptr;
 Map* map;
 GameObject* player;
@@ -46,13 +50,28 @@ void Game::handleEvents() {
             std::cout << "QUIT!" << '\n';
             isRunning = false;
             break;
+        case SDL_KEYDOWN: {
+            switch (event.key.keysym.sym) {
+                case SDLK_d: direction = 1; break;
+                case SDLK_s: direction = 2; break;
+                case SDLK_a: direction = 3; break;
+                case SDLK_w: direction = 4; break;
+            }
+        }
         default:
             break;
     }
 }
 
 void Game::update() {
-    player->Update(40, 40, 0, 0);
+    player->Update(40, 40, 0, 0, playerX, playerY);
+    switch (direction) {
+        case 1: playerX += PLAYER_SPEED; break;
+        case 2: playerY += PLAYER_SPEED; break;
+        case 3: playerX -= PLAYER_SPEED; break;
+        case 4: playerY -= PLAYER_SPEED; break;
+        default: break;
+    }
 }
 
 void Game::render() {

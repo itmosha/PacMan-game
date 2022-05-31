@@ -54,6 +54,6 @@ void Map::loadMap(bool arr[33][28]) {
 }
 
 void Map::drawMap() {
-    map_texture->Update(990, 840, 0, 0);
+    map_texture->Update(990, 840, 0, 0, 0, 0);
     map_texture->Render();
 }
