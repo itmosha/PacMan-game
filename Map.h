@@ -6,7 +6,8 @@ public:
     Map();
     ~Map();
 
-    void loadMap(bool arr[33][28]);
+    bool get_map_element(int row, int column);
+    void loadMap();
     void drawMap();
 
 private:

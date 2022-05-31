@@ -2,14 +2,16 @@
 #include "TextureCreator.h"
 #include "Map.h"
 #include "GameObject.h"
+#include "CollisionChecker.h"
 
-const int PLAYER_SPEED = 2;
+const int PLAYER_SPEED = 1;
 int direction = 0;
 int playerX = 400, playerY = 685, playerSourceX = 0;
 
 SDL_Renderer* Game::renderer = nullptr;
 Map* map;
 GameObject* player;
+CollisionChecker collisionChecker;
 
 Game::Game() {
 
@@ -64,11 +66,12 @@ void Game::handleEvents() {
 
 void Game::update() {
     player->Update(40, 40, playerSourceX, 0, playerX, playerY);
+    // std::cout << collisionChecker.RightCollision(playerX, playerY) << '\n';
     switch (direction) {
-        case 1: playerX += PLAYER_SPEED; break;
-        case 2: playerY += PLAYER_SPEED; break;
-        case 3: playerX -= PLAYER_SPEED; break;
-        case 4: playerY -= PLAYER_SPEED; break;
+        case 1: if (!collisionChecker.RightCollision(playerX, playerY)) playerX += PLAYER_SPEED; break;
+        case 2: if (!collisionChecker.DownCollision(playerX, playerY)) playerY += PLAYER_SPEED; break;
+        case 3: if (!collisionChecker.LeftCollision(playerX, playerY)) playerX -= PLAYER_SPEED; break;
+        case 4: if (!collisionChecker.UpCollision(playerX, playerY)) playerY -= PLAYER_SPEED; break;
         default: break;
     }
 }

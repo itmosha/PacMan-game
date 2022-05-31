@@ -3,6 +3,7 @@
 #include "SDL_image.h"
 #include "iostream"
 
+
 class Game {
 private:
     bool isRunning;
@@ -18,7 +19,7 @@ public:
     void render();
     void clean();
 
-    bool running() { return isRunning; };
+    bool running() const { return isRunning; };
 
     static SDL_Renderer* renderer;
 };
