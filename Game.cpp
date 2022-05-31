@@ -5,7 +5,7 @@
 
 const int PLAYER_SPEED = 2;
 int direction = 0;
-int playerX = 430, playerY = 685;
+int playerX = 400, playerY = 685, playerSourceX = 0;
 
 SDL_Renderer* Game::renderer = nullptr;
 Map* map;
@@ -47,15 +47,14 @@ void Game::handleEvents() {
 
     switch (event.type) {
         case SDL_QUIT:
-            std::cout << "QUIT!" << '\n';
             isRunning = false;
             break;
         case SDL_KEYDOWN: {
             switch (event.key.keysym.sym) {
-                case SDLK_d: direction = 1; break;
-                case SDLK_s: direction = 2; break;
-                case SDLK_a: direction = 3; break;
-                case SDLK_w: direction = 4; break;
+                case SDLK_d: direction = 1; playerSourceX = 40; break;
+                case SDLK_s: direction = 2; playerSourceX = 80; break;
+                case SDLK_a: direction = 3; playerSourceX = 120; break;
+                case SDLK_w: direction = 4; playerSourceX = 160; break;
             }
         }
         default:
@@ -64,7 +63,7 @@ void Game::handleEvents() {
 }
 
 void Game::update() {
-    player->Update(40, 40, 0, 0, playerX, playerY);
+    player->Update(40, 40, playerSourceX, 0, playerX, playerY);
     switch (direction) {
         case 1: playerX += PLAYER_SPEED; break;
         case 2: playerY += PLAYER_SPEED; break;
