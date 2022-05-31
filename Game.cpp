@@ -1,11 +1,11 @@
 #include "Game.h"
 #include "TextureCreator.h"
-#include "GameObject.h"
 #include "Map.h"
+#include "GameObject.h"
 
-GameObject* player;
 SDL_Renderer* Game::renderer = nullptr;
 Map* map;
+GameObject* player;
 
 Game::Game() {
 
@@ -43,6 +43,7 @@ void Game::handleEvents() {
 
     switch (event.type) {
         case SDL_QUIT:
+            std::cout << "QUIT!" << '\n';
             isRunning = false;
             break;
         default:
