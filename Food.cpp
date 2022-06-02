@@ -4,7 +4,11 @@
 
 Food::Food() {
 
-    for (int i = 0; i < 3; ++i) is_bonus[i] = rand() % 244;
+    int bonuses[3];
+    for (int i = 0; i < 3; ++i) bonuses[i] = rand() % 244;
+
+    for (int i = 0; i < FOOD_COUNT; ++i) is_bonus[i] = false;
+    for (int i = 0; i < 3; ++i) is_bonus[bonuses[i]] = true;
 
     loadFood();
 
@@ -33,10 +37,8 @@ void Food::loadFood() {
 void Food::drawFood() {
     for (int i = 0; i < FOOD_COUNT; ++i) {
         if (!is_eaten[i]) {
-            bool bonus = false;
-            for (int j = 0; j < 3; ++j) if (is_bonus[j] == i) bonus = true;
 
-            if (bonus) {
+            if (is_bonus[i]) {
                 food_array[i]->Update(20, 20, 20, 0, food_coords[i].x * 30 + 5, food_coords[i].y * 30 + 5);
                 food_array[i]->Render();
             }
@@ -44,6 +46,33 @@ void Food::drawFood() {
                 food_array[i]->Update(20, 20, 0, 0, food_coords[i].x * 30 + 5, food_coords[i].y * 30 + 5);
                 food_array[i]->Render();
             }
+        }
+    }
+}
+
+// 0 if there is no food
+// 1 if there is regular food
+// 2 if there is a bonus
+
+int Food::get_food_by_coords(int x, int y) {
+    bool found = false;
+    for (int i = 0; i < FOOD_COUNT; ++i) {
+        if (food_coords[i].x == x && food_coords[i].y == y) {
+            if (is_eaten[i]) return 0;
+            else {
+                if (is_bonus[i]) return 2;
+                else return 1;
+            }
+        }
+    }
+    return 0;
+}
+
+void Food::eat_food(int x, int y) {
+    for (int i = 0; i < FOOD_COUNT; ++i) {
+        if (food_coords[i].x == x && food_coords[i].y == y) {
+            is_eaten[i] = true;
+            break;
         }
     }
 }

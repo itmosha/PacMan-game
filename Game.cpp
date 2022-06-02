@@ -8,6 +8,7 @@
 const int PLAYER_SPEED = 1;
 int direction = 0;
 int playerX = 400, playerY = 685, playerSourceX = 0;
+int points = 0;
 
 SDL_Renderer* Game::renderer = nullptr;
 Map* map;
@@ -69,12 +70,56 @@ void Game::handleEvents() {
 
 void Game::update() {
     player->Update(40, 40, playerSourceX, 0, playerX, playerY);
-    // std::cout << collisionChecker.RightCollision(playerX, playerY) << '\n';
+
+    // moving direction
     switch (direction) {
-        case 1: if (!collisionChecker.RightCollision(playerX, playerY)) playerX += PLAYER_SPEED; break;
-        case 2: if (!collisionChecker.DownCollision(playerX, playerY)) playerY += PLAYER_SPEED; break;
-        case 3: if (!collisionChecker.LeftCollision(playerX, playerY)) playerX -= PLAYER_SPEED; break;
-        case 4: if (!collisionChecker.UpCollision(playerX, playerY)) playerY -= PLAYER_SPEED; break;
+        case 1: if (!collisionChecker.RightWallCollision(playerX, playerY)) playerX += PLAYER_SPEED; break;
+        case 2: if (!collisionChecker.DownWallCollision(playerX, playerY)) playerY += PLAYER_SPEED; break;
+        case 3: if (!collisionChecker.LeftWallCollision(playerX, playerY)) playerX -= PLAYER_SPEED; break;
+        case 4: if (!collisionChecker.UpWallCollision(playerX, playerY)) playerY -= PLAYER_SPEED; break;
+        default: break;
+    }
+
+    // food detection
+    int playerCellX = (playerX + 20) / 30, playerCellY = (playerY + 20) / 30;
+
+    switch (direction) {
+        case 1: {
+            int any_food = food->get_food_by_coords(playerCellX + 1, playerCellY);
+            if (any_food) {
+                if ((playerX + 20) % 30 >= 25) {
+                    food->eat_food(playerCellX + 1, playerCellY);
+                    points++;
+                }
+            }
+        } break;
+        case 2: {
+            int any_food = food->get_food_by_coords(playerCellX, playerCellY + 1);
+            if (any_food) {
+                if ((playerY + 20) % 30 >= 25) {
+                    food->eat_food(playerCellX, playerCellY + 1);
+                    points++;
+                }
+            }
+        }
+        case 3: {
+            int any_food = food->get_food_by_coords(playerCellX - 1, playerCellY);
+            if (any_food) {
+                if ((playerX - 20) % 30 >= 25) {
+                    food->eat_food(playerCellX - 1, playerCellY);
+                    points++;
+                }
+            }
+        }
+        case 4: {
+            int any_food = food->get_food_by_coords(playerCellX, playerCellY - 1);
+            if (any_food) {
+                if ((playerY - 20) % 30 >= 25) {
+                    food->eat_food(playerCellX, playerCellY - 1);
+                    points++;
+                }
+            }
+        }
         default: break;
     }
 }

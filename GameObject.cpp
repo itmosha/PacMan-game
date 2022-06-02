@@ -24,3 +24,4 @@ void GameObject::Update(int H, int W, int sourceX, int sourceY, int destX, int d
 void GameObject::Render() {
     SDL_RenderCopy(Game::renderer, objectTexture, &sourceRectangle, &destinationRectangle);
 }
+

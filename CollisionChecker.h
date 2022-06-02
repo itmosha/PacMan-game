@@ -6,8 +6,9 @@ private:
 public:
     CollisionChecker();
 
-    bool RightCollision(int x, int y);
-    bool LeftCollision(int x, int y);
-    bool DownCollision(int x, int y);
-    bool UpCollision(int x, int y);
+    bool RightWallCollision(int x, int y);
+    bool LeftWallCollision(int x, int y);
+    bool DownWallCollision(int x, int y);
+    bool UpWallCollision(int x, int y);
+
 };

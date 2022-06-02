@@ -2,6 +2,7 @@
 #include "Game.h"
 #include "Map.h"
 #include "fstream"
+#include "Food.h"
 
 CollisionChecker::CollisionChecker() {
     std::ifstream in;
@@ -13,12 +14,12 @@ CollisionChecker::CollisionChecker() {
     in.close();
 }
 
-bool CollisionChecker::RightCollision(int x, int y) {
+bool CollisionChecker::RightWallCollision(int x, int y) {
 
-    int luX = x + 5, luY = y + 10;
+    int luX = x + 35, luY = y + 10;
     int cellX = luX/30, cellY = luY/30;
 
-    int upPoint = collisionMap[cellY][cellX + 1];
+    int upPoint = collisionMap[cellY][cellX];
 
     luY = y + 30;
     cellY = luY/30;
@@ -28,23 +29,23 @@ bool CollisionChecker::RightCollision(int x, int y) {
     return upPoint || downPoint;
 }
 
-bool CollisionChecker::DownCollision(int x, int y) {
+bool CollisionChecker::DownWallCollision(int x, int y) {
 
-    int lrX = x + 10, lrY = y + 5;
+    int lrX = x + 10, lrY = y + 35;
     int cellX = lrX / 30, cellY = lrY / 30;
 
-    int leftPoint = collisionMap[cellY + 1][cellX];
+    int leftPoint = collisionMap[cellY][cellX];
 
     lrX = x + 30;
     cellX = lrX / 30;
-    int rightPoint = collisionMap[cellY + 1][cellX];
+    int rightPoint = collisionMap[cellY][cellX];
 
     return leftPoint || rightPoint;
 }
 
-bool CollisionChecker::LeftCollision(int x, int y) {
+bool CollisionChecker::LeftWallCollision(int x, int y) {
 
-    int luX = x + 4, luY = y + 10;
+    int luX = x + 5, luY = y + 10;
     int cellX = luX / 30, cellY = luY / 30;
 
     int upPoint = collisionMap[cellY][cellX];
@@ -57,9 +58,9 @@ bool CollisionChecker::LeftCollision(int x, int y) {
     return upPoint || downPoint;
 }
 
-bool CollisionChecker::UpCollision(int x, int y) {
+bool CollisionChecker::UpWallCollision(int x, int y) {
 
-    int lrX = x + 10, lrY = y + 4;
+    int lrX = x + 10, lrY = y + 5;
     int cellX = lrX / 30, cellY = lrY / 30;
 
     int leftPoint = collisionMap[cellY][cellX];
