@@ -24,9 +24,12 @@ Map* map;
 Food* food;
 
 TextObject* score;
+TextObject* Lives;
 
 GameObject* player;
 GameObject* RedGhost, *BlueGhost, *PinkGhost, *OrangeGhost;
+
+GameObject* lives_list[3];
 
 Game::Game() { }
 
@@ -56,14 +59,19 @@ void Game::init(const char *title, int xPos, int yPos, int width, int height) {
     SDL_SetWindowIcon(window, tmpSurface);
     SDL_FreeSurface(tmpSurface);
 
+    for (int i = 0; i < 3; ++i) lives_list[i] = new GameObject("../assets/CharacterLife.png", 0, 0);
+
+    player = new GameObject("../assets/Character.png", 0, 0);
+
     RedGhost = new GameObject("../assets/Ghosts.png", 0, 0);
     BlueGhost = new GameObject("../assets/Ghosts.png", 0, 0);
     PinkGhost = new GameObject("../assets/Ghosts.png", 0, 0);
     OrangeGhost = new GameObject("../assets/Ghosts.png", 0, 0);
 
-    score = new TextObject("../fonts/ka1.ttf", 30, 420, 930);
+    score = new TextObject("../fonts/ka1.ttf", 30, 0, 0);
+    Lives = new TextObject("../fonts/ka1.ttf", 30, 0, 0);
+
     food = new Food();
-    player = new GameObject("../assets/Character.png", 400, 685);
     map = new Map();
 }
 
@@ -97,6 +105,9 @@ void Game::update() {
     OrangeGhost->Update(40, 40, 120, 0, OrangeGhostX, OrangeGhostY);
 
     score->Update(50, 240, 540, 925, TextObject::score_toString(points));
+    Lives->Update(50, 180, 40, 925, "Lives: ");
+
+    for (int i = 0; i < 3; ++i) lives_list[i]->Update(40, 40, 0, 0, 220 + i*50,932);
 
     // moving direction
     switch (direction) {
@@ -165,7 +176,9 @@ void Game::render() {
     OrangeGhost->Render();
 
     score->Render();
+    Lives->Render();
 
+    for (int i = 0; i < lives; ++i) lives_list[i]->Render();
     SDL_RenderPresent(renderer);
 }
 
