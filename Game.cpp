@@ -4,6 +4,7 @@
 #include "GameObject.h"
 #include "CollisionChecker.h"
 #include "Food.h"
+#include "TextObject.h"
 
 const int PLAYER_SPEED = 1;
 int direction = 0;
@@ -15,6 +16,7 @@ Map* map;
 GameObject* player;
 CollisionChecker collisionChecker;
 Food* food;
+TextObject* score;
 
 Game::Game() { }
 
@@ -38,10 +40,13 @@ void Game::init(const char *title, int xPos, int yPos, int width, int height) {
         isRunning = false;
     }
 
+    TTF_Init();
+
     SDL_Surface *tmpSurface = IMG_Load("../assets/Icon.png");
     SDL_SetWindowIcon(window, tmpSurface);
     SDL_FreeSurface(tmpSurface);
 
+    score = new TextObject("../fonts/ka1.ttf", 30, 420, 930);
     food = new Food();
     player = new GameObject("../assets/Character.png", 400, 685);
     map = new Map();
@@ -70,6 +75,8 @@ void Game::handleEvents() {
 
 void Game::update() {
     player->Update(40, 40, playerSourceX, 0, playerX, playerY);
+
+    score->Update(50, 240, 540, 925, TextObject::score_toString(points));
 
     // moving direction
     switch (direction) {
@@ -125,10 +132,13 @@ void Game::update() {
 }
 
 void Game::render() {
+
+
     SDL_RenderClear(renderer);
     map->drawMap();
     food->drawFood();
     player->Render();
+    score->Render();
 
     SDL_RenderPresent(renderer);
 }
