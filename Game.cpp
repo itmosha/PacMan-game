@@ -3,6 +3,7 @@
 #include "Map.h"
 #include "GameObject.h"
 #include "CollisionChecker.h"
+#include "Food.h"
 
 const int PLAYER_SPEED = 1;
 int direction = 0;
@@ -12,14 +13,11 @@ SDL_Renderer* Game::renderer = nullptr;
 Map* map;
 GameObject* player;
 CollisionChecker collisionChecker;
+Food* food;
 
-Game::Game() {
+Game::Game() { }
 
-}
-
-Game::~Game() {
-
-}
+Game::~Game() { }
 
 void Game::init(const char *title, int xPos, int yPos, int width, int height) {
     if (SDL_Init(SDL_INIT_EVERYTHING) == 0){
@@ -39,6 +37,11 @@ void Game::init(const char *title, int xPos, int yPos, int width, int height) {
         isRunning = false;
     }
 
+    SDL_Surface *tmpSurface = IMG_Load("../assets/Icon.png");
+    SDL_SetWindowIcon(window, tmpSurface);
+    SDL_FreeSurface(tmpSurface);
+
+    food = new Food();
     player = new GameObject("../assets/Character.png", 400, 685);
     map = new Map();
 }
@@ -79,6 +82,7 @@ void Game::update() {
 void Game::render() {
     SDL_RenderClear(renderer);
     map->drawMap();
+    food->drawFood();
     player->Render();
 
     SDL_RenderPresent(renderer);

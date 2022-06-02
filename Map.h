@@ -12,8 +12,6 @@ public:
 
 private:
     SDL_Rect source, destination;
-    SDL_Texture* floor;
-    SDL_Texture* walls;
 
     int map[33][28];
 };

@@ -15,7 +15,7 @@ bool Map::get_map_element(int row, int column) {
 
 void Map::loadMap() {
     std::ifstream in;
-    in.open("MapStructure.txt");
+    in.open("other/MapStructure.txt");
 
     for (int row = 0; row < 33; row++) {
         for (int column = 0; column < 28; column++) {

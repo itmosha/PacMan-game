@@ -15,12 +15,12 @@ CollisionChecker::CollisionChecker() {
 
 bool CollisionChecker::RightCollision(int x, int y) {
 
-    int luX = x + 5, luY = y + 8;
+    int luX = x + 5, luY = y + 10;
     int cellX = luX/30, cellY = luY/30;
 
     int upPoint = collisionMap[cellY][cellX + 1];
 
-    luY = y + 32;
+    luY = y + 30;
     cellY = luY/30;
 
     int downPoint = collisionMap[cellY][cellX];
@@ -30,12 +30,12 @@ bool CollisionChecker::RightCollision(int x, int y) {
 
 bool CollisionChecker::DownCollision(int x, int y) {
 
-    int lrX = x + 8, lrY = y + 5;
+    int lrX = x + 10, lrY = y + 5;
     int cellX = lrX / 30, cellY = lrY / 30;
 
     int leftPoint = collisionMap[cellY + 1][cellX];
 
-    lrX = x + 32;
+    lrX = x + 30;
     cellX = lrX / 30;
     int rightPoint = collisionMap[cellY + 1][cellX];
 
@@ -44,12 +44,12 @@ bool CollisionChecker::DownCollision(int x, int y) {
 
 bool CollisionChecker::LeftCollision(int x, int y) {
 
-    int luX = x + 4, luY = y + 8;
+    int luX = x + 4, luY = y + 10;
     int cellX = luX / 30, cellY = luY / 30;
 
     int upPoint = collisionMap[cellY][cellX];
 
-    luY = y + 32;
+    luY = y + 30;
     cellY = luY / 30;
 
     int downPoint = collisionMap[cellY][cellX];
