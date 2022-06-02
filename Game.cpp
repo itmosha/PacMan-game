@@ -9,14 +9,24 @@
 const int PLAYER_SPEED = 1;
 int direction = 0;
 int playerX = 400, playerY = 685, playerSourceX = 0;
-int points = 0;
+
+int RedGhostX = 400, RedGhostY = 325;
+int BlueGhostX = 345, BlueGhostY = 415;
+int PinkGhostX = 400, PinkGhostY = 415;
+int OrangeGhostX = 455, OrangeGhostY = 415;
+
+int points = 0, lives = 3;
 
 SDL_Renderer* Game::renderer = nullptr;
-Map* map;
-GameObject* player;
 CollisionChecker collisionChecker;
+
+Map* map;
 Food* food;
+
 TextObject* score;
+
+GameObject* player;
+GameObject* RedGhost, *BlueGhost, *PinkGhost, *OrangeGhost;
 
 Game::Game() { }
 
@@ -45,6 +55,11 @@ void Game::init(const char *title, int xPos, int yPos, int width, int height) {
     SDL_Surface *tmpSurface = IMG_Load("../assets/Icon.png");
     SDL_SetWindowIcon(window, tmpSurface);
     SDL_FreeSurface(tmpSurface);
+
+    RedGhost = new GameObject("../assets/Ghosts.png", 0, 0);
+    BlueGhost = new GameObject("../assets/Ghosts.png", 0, 0);
+    PinkGhost = new GameObject("../assets/Ghosts.png", 0, 0);
+    OrangeGhost = new GameObject("../assets/Ghosts.png", 0, 0);
 
     score = new TextObject("../fonts/ka1.ttf", 30, 420, 930);
     food = new Food();
@@ -75,6 +90,11 @@ void Game::handleEvents() {
 
 void Game::update() {
     player->Update(40, 40, playerSourceX, 0, playerX, playerY);
+
+    RedGhost->Update(40, 40, 0, 0, RedGhostX, RedGhostY);
+    BlueGhost->Update(40, 40, 40, 0, BlueGhostX, BlueGhostY);
+    PinkGhost->Update(40, 40, 80, 0, PinkGhostX, PinkGhostY);
+    OrangeGhost->Update(40, 40, 120, 0, OrangeGhostX, OrangeGhostY);
 
     score->Update(50, 240, 540, 925, TextObject::score_toString(points));
 
@@ -132,12 +152,18 @@ void Game::update() {
 }
 
 void Game::render() {
-
-
     SDL_RenderClear(renderer);
+
     map->drawMap();
     food->drawFood();
+
     player->Render();
+
+    RedGhost->Render();
+    BlueGhost->Render();
+    PinkGhost->Render();
+    OrangeGhost->Render();
+
     score->Render();
 
     SDL_RenderPresent(renderer);
