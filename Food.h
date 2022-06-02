@@ -10,6 +10,7 @@ class Food {
 private:
     GameObject* food_array[FOOD_COUNT];
     bool is_eaten[FOOD_COUNT];
+    int is_bonus[3];
     coords food_coords[FOOD_COUNT];
 
 public:
