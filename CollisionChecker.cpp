@@ -6,11 +6,12 @@
 
 CollisionChecker::CollisionChecker() {
     std::ifstream in;
-    in.open("MapStructure.txt");
+    in.open("../other/MapStructure.txt");
 
     for (int rows = 0; rows < 33; rows++) {
         for (int columns = 0; columns < 28; columns++) in >> collisionMap[rows][columns];
     }
+
     in.close();
 }
 

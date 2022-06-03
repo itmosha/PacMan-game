@@ -4,12 +4,14 @@
 class GameObject {
 public:
 
+    GameObject() = default;
     GameObject(const char* texturesheet, int x, int y);
-    ~GameObject();
+    ~GameObject() = default;
 
     void Update(int H, int W, int sourceX, int sourceY, int destX, int destY);
+
     void Render();
-private:
+protected:
     int xPos;
     int yPos;
 

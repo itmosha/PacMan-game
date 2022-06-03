@@ -5,15 +5,11 @@
 #include "CollisionChecker.h"
 #include "Food.h"
 #include "TextObject.h"
+#include "Ghost.h"
 
-const int PLAYER_SPEED = 1;
+const int PLAYER_SPEED = 2;
 int direction = 0;
 int playerX = 400, playerY = 685, playerSourceX = 0;
-
-int RedGhostX = 400, RedGhostY = 325;
-int BlueGhostX = 345, BlueGhostY = 415;
-int PinkGhostX = 400, PinkGhostY = 415;
-int OrangeGhostX = 455, OrangeGhostY = 415;
 
 int points = 0, lives = 3;
 
@@ -27,7 +23,7 @@ TextObject* score;
 TextObject* Lives;
 
 GameObject* player;
-GameObject* RedGhost, *BlueGhost, *PinkGhost, *OrangeGhost;
+Ghost* RedGhost, *BlueGhost, *PinkGhost, *OrangeGhost;
 
 GameObject* lives_list[3];
 
@@ -63,10 +59,10 @@ void Game::init(const char *title, int xPos, int yPos, int width, int height) {
 
     player = new GameObject("../assets/Character.png", 0, 0);
 
-    RedGhost = new GameObject("../assets/Ghosts.png", 0, 0);
-    BlueGhost = new GameObject("../assets/Ghosts.png", 0, 0);
-    PinkGhost = new GameObject("../assets/Ghosts.png", 0, 0);
-    OrangeGhost = new GameObject("../assets/Ghosts.png", 0, 0);
+    RedGhost = new Ghost(1);
+    BlueGhost = new Ghost(2);
+    PinkGhost = new Ghost(3);
+    OrangeGhost = new Ghost(4);
 
     score = new TextObject("../fonts/ka1.ttf", 30, 0, 0);
     Lives = new TextObject("../fonts/ka1.ttf", 30, 0, 0);
@@ -99,13 +95,13 @@ void Game::handleEvents() {
 void Game::update() {
     player->Update(40, 40, playerSourceX, 0, playerX, playerY);
 
-    RedGhost->Update(40, 40, 0, 0, RedGhostX, RedGhostY);
-    BlueGhost->Update(40, 40, 40, 0, BlueGhostX, BlueGhostY);
-    PinkGhost->Update(40, 40, 80, 0, PinkGhostX, PinkGhostY);
-    OrangeGhost->Update(40, 40, 120, 0, OrangeGhostX, OrangeGhostY);
+    RedGhost->UpdateGhost(points);
+    BlueGhost->UpdateGhost(points);
+    PinkGhost->UpdateGhost(points);
+    OrangeGhost->UpdateGhost(points);
 
     score->Update(50, 240, 540, 925, TextObject::score_toString(points));
-    Lives->Update(50, 180, 40, 925, "Lives: ");
+    Lives->Update(50, 180, 40, 925, "Lifes: ");
 
     for (int i = 0; i < 3; ++i) lives_list[i]->Update(40, 40, 0, 0, 220 + i*50,932);
 
@@ -170,7 +166,7 @@ void Game::render() {
 
     player->Render();
 
-    RedGhost->Render();
+    RedGhost->RenderGhost();
     BlueGhost->Render();
     PinkGhost->Render();
     OrangeGhost->Render();
