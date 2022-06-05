@@ -5,7 +5,7 @@ Food* food;
 
 Player::Player() {
     objectTexture = TextureCreator::loadTexture("../assets/Character.png");
-    collisionChecker = new CollisionChecker();
+    collisionCheckerPlayer = new CollisionChecker();
     food = new Food();
 
     xPos = 400;
@@ -15,7 +15,7 @@ Player::Player() {
 
 void Player::SetDirection(int dir) { direction = dir; }
 
-bool Player::UpdatePlayer() {
+void Player::UpdatePlayer() {
 
     int sourceX;
     switch (direction) {
@@ -48,23 +48,24 @@ bool Player::UpdatePlayer() {
 
     switch (direction) {
         case 1:
-            if (!collisionChecker->RightWallCollision(xPos, yPos)) xPos += PLAYER_SPEED;
+            if (!collisionCheckerPlayer->RightWallCollision(xPos, yPos)) xPos += PLAYER_SPEED;
             break;
         case 2:
-            if (!collisionChecker->DownWallCollision(xPos, yPos)) yPos += PLAYER_SPEED;
+            if (!collisionCheckerPlayer->DownWallCollision(xPos, yPos)) yPos += PLAYER_SPEED;
             break;
         case 3:
-            if (!collisionChecker->LeftWallCollision(xPos, yPos)) xPos -= PLAYER_SPEED;
+            if (!collisionCheckerPlayer->LeftWallCollision(xPos, yPos)) xPos -= PLAYER_SPEED;
             break;
         case 4:
-            if (!collisionChecker->UpWallCollision(xPos, yPos)) yPos -= PLAYER_SPEED;
+            if (!collisionCheckerPlayer->UpWallCollision(xPos, yPos)) yPos -= PLAYER_SPEED;
             break;
         default:
             break;
     }
+}
 
+bool Player::FoodCollisions() {
     int playerCellX = (xPos + 20) / 30, playerCellY = (yPos + 20)/30;
-
     switch (direction) {
         case 1: {
             int any_food = food->get_food_by_coords(playerCellX + 1, playerCellY);
@@ -103,6 +104,15 @@ bool Player::UpdatePlayer() {
             }
         }
         default: break;
+    }
+    return false;
+}
+
+bool Player::GhostCollisions(Ghost *ghosts[4]) {
+
+    for (int i = 0; i < 4; ++i) {
+        if (ghosts[i]->GetX() + 40 >= xPos && ghosts[i]->GetX() <= xPos + 40 &&
+            ghosts[i]->GetY() + 40 >= yPos && ghosts[i]->GetY() <= yPos + 40) return true;
     }
     return false;
 }

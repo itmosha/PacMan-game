@@ -10,16 +10,17 @@
 
 SDL_Renderer* Game::renderer = nullptr;
 Map* map;
+static int player_cooldown = 0;
 
 TextObject* score;
 TextObject* Lives;
 
 Player* player;
-Ghost* RedGhost, *BlueGhost, *PinkGhost, *OrangeGhost;
+Ghost* ghosts[4];
 
 GameObject* lives_list[3];
 
-Game::Game() { points = 0; lives = 3;}
+Game::Game() { points = 0; lives = 3; }
 void Game::TakeLife() {lives--;}
 void Game::AddPoint() {points++;}
 Game::~Game() { }
@@ -48,14 +49,10 @@ void Game::init(const char *title, int xPos, int yPos, int width, int height) {
     SDL_SetWindowIcon(window, tmpSurface);
     SDL_FreeSurface(tmpSurface);
 
-    for (int i = 0; i < 3; ++i) lives_list[i] = new GameObject("../assets/CharacterLife.png", 0, 0);
+    for (auto & i : lives_list) i = new GameObject("../assets/CharacterLife.png", 0, 0);
 
     player = new Player();
-
-    RedGhost = new Ghost(1);
-    BlueGhost = new Ghost(2);
-    PinkGhost = new Ghost(3);
-    OrangeGhost = new Ghost(4);
+    for (int i = 0; i < 4; ++i) ghosts[i] = new Ghost(i+1);
 
     score = new TextObject("../fonts/ka1.ttf", 30, 0, 0);
     Lives = new TextObject("../fonts/ka1.ttf", 30, 0, 0);
@@ -85,17 +82,21 @@ void Game::handleEvents() {
 }
 
 void Game::update() {
-    if (player->UpdatePlayer()) points++;
+    player->UpdatePlayer();
+    if (player->FoodCollisions()) points++;
+    if (!player_cooldown && player->GhostCollisions(ghosts)) {
+        std::cout << "Collision!" << '\n';
+        player_cooldown = 180;
+        lives--;
+    }
 
-    RedGhost->UpdateGhost(points);
-    BlueGhost->UpdateGhost(points);
-    PinkGhost->UpdateGhost(points);
-    OrangeGhost->UpdateGhost(points);
+    for (auto & ghost : ghosts) ghost->UpdateGhost(points);
 
     score->Update(50, 240, 540, 925, TextObject::score_toString(points));
     Lives->Update(50, 180, 40, 925, "Lifes: ");
 
     for (int i = 0; i < 3; ++i) lives_list[i]->Update(40, 40, 0, 0, 220 + i*50,932);
+    if (player_cooldown) player_cooldown--;
 }
 
 void Game::render() {
@@ -105,10 +106,7 @@ void Game::render() {
 
     player->RenderPlayer();
 
-    RedGhost->RenderGhost();
-    BlueGhost->Render();
-    PinkGhost->Render();
-    OrangeGhost->Render();
+    for (auto & ghost : ghosts) ghost->RenderGhost();
 
     score->Render();
     Lives->Render();

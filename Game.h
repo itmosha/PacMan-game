@@ -1,10 +1,10 @@
 #pragma once
+//#include "GameObject.h"
 #include "SDL.h"
 #include "SDL_image.h"
 #include "SDL_ttf.h"
 #include "CollisionChecker.h"
 #include "iostream"
-
 
 class Game {
 private:
@@ -20,7 +20,6 @@ public:
 
     void TakeLife();
     void AddPoint();
-
     void handleEvents();
     void update();
     void render();

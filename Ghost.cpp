@@ -28,13 +28,19 @@ void Ghost::UpdateGhost(int points) {
 
     destinationRectangle.h = 40;
     destinationRectangle.w = 40;
-    destinationRectangle.x = destX;
-    destinationRectangle.y = destY;
+    destinationRectangle.x = xPos;
+    destinationRectangle.y = yPos;
 
     Update(40, 40, sourceX, 0, destinationRectangle.x, destinationRectangle.y);
 
     switch (type) {
-        case 1: is_active = true; break;
+        case 1: {
+            if (!is_active) {
+                xPos = 400;
+                yPos = 325;
+                is_active = true;
+            }
+        } break;
         case 2: {
             if (points >= 75 && !is_active) {
                 xPos = 400;
