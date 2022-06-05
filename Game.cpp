@@ -6,29 +6,22 @@
 #include "Food.h"
 #include "TextObject.h"
 #include "Ghost.h"
-
-const int PLAYER_SPEED = 2;
-int direction = 0;
-int playerX = 400, playerY = 685, playerSourceX = 0;
-
-int points = 0, lives = 3;
+#include "Player.h"
 
 SDL_Renderer* Game::renderer = nullptr;
-CollisionChecker collisionChecker;
-
 Map* map;
-Food* food;
 
 TextObject* score;
 TextObject* Lives;
 
-GameObject* player;
+Player* player;
 Ghost* RedGhost, *BlueGhost, *PinkGhost, *OrangeGhost;
 
 GameObject* lives_list[3];
 
-Game::Game() { }
-
+Game::Game() { points = 0; lives = 3;}
+void Game::TakeLife() {lives--;}
+void Game::AddPoint() {points++;}
 Game::~Game() { }
 
 void Game::init(const char *title, int xPos, int yPos, int width, int height) {
@@ -57,7 +50,7 @@ void Game::init(const char *title, int xPos, int yPos, int width, int height) {
 
     for (int i = 0; i < 3; ++i) lives_list[i] = new GameObject("../assets/CharacterLife.png", 0, 0);
 
-    player = new GameObject("../assets/Character.png", 0, 0);
+    player = new Player();
 
     RedGhost = new Ghost(1);
     BlueGhost = new Ghost(2);
@@ -67,7 +60,6 @@ void Game::init(const char *title, int xPos, int yPos, int width, int height) {
     score = new TextObject("../fonts/ka1.ttf", 30, 0, 0);
     Lives = new TextObject("../fonts/ka1.ttf", 30, 0, 0);
 
-    food = new Food();
     map = new Map();
 }
 
@@ -81,10 +73,10 @@ void Game::handleEvents() {
             break;
         case SDL_KEYDOWN: {
             switch (event.key.keysym.sym) {
-                case SDLK_d: direction = 1; playerSourceX = 40; break;
-                case SDLK_s: direction = 2; playerSourceX = 80; break;
-                case SDLK_a: direction = 3; playerSourceX = 120; break;
-                case SDLK_w: direction = 4; playerSourceX = 160; break;
+                case SDLK_d: player->SetDirection(1); break;
+                case SDLK_s: player->SetDirection(2); break;
+                case SDLK_a: player->SetDirection(3); break;
+                case SDLK_w: player->SetDirection(4); break;
             }
         }
         default:
@@ -93,7 +85,7 @@ void Game::handleEvents() {
 }
 
 void Game::update() {
-    player->Update(40, 40, playerSourceX, 0, playerX, playerY);
+    if (player->UpdatePlayer()) points++;
 
     RedGhost->UpdateGhost(points);
     BlueGhost->UpdateGhost(points);
@@ -104,67 +96,14 @@ void Game::update() {
     Lives->Update(50, 180, 40, 925, "Lifes: ");
 
     for (int i = 0; i < 3; ++i) lives_list[i]->Update(40, 40, 0, 0, 220 + i*50,932);
-
-    // moving direction
-    switch (direction) {
-        case 1: if (!collisionChecker.RightWallCollision(playerX, playerY)) playerX += PLAYER_SPEED; break;
-        case 2: if (!collisionChecker.DownWallCollision(playerX, playerY)) playerY += PLAYER_SPEED; break;
-        case 3: if (!collisionChecker.LeftWallCollision(playerX, playerY)) playerX -= PLAYER_SPEED; break;
-        case 4: if (!collisionChecker.UpWallCollision(playerX, playerY)) playerY -= PLAYER_SPEED; break;
-        default: break;
-    }
-
-    // food detection
-    int playerCellX = (playerX + 20) / 30, playerCellY = (playerY + 20) / 30;
-
-    switch (direction) {
-        case 1: {
-            int any_food = food->get_food_by_coords(playerCellX + 1, playerCellY);
-            if (any_food) {
-                if ((playerX + 20) % 30 >= 25) {
-                    food->eat_food(playerCellX + 1, playerCellY);
-                    points++;
-                }
-            }
-        } break;
-        case 2: {
-            int any_food = food->get_food_by_coords(playerCellX, playerCellY + 1);
-            if (any_food) {
-                if ((playerY + 20) % 30 >= 25) {
-                    food->eat_food(playerCellX, playerCellY + 1);
-                    points++;
-                }
-            }
-        }
-        case 3: {
-            int any_food = food->get_food_by_coords(playerCellX - 1, playerCellY);
-            if (any_food) {
-                if ((playerX - 20) % 30 >= 25) {
-                    food->eat_food(playerCellX - 1, playerCellY);
-                    points++;
-                }
-            }
-        }
-        case 4: {
-            int any_food = food->get_food_by_coords(playerCellX, playerCellY - 1);
-            if (any_food) {
-                if ((playerY - 20) % 30 >= 25) {
-                    food->eat_food(playerCellX, playerCellY - 1);
-                    points++;
-                }
-            }
-        }
-        default: break;
-    }
 }
 
 void Game::render() {
     SDL_RenderClear(renderer);
 
     map->drawMap();
-    food->drawFood();
 
-    player->Render();
+    player->RenderPlayer();
 
     RedGhost->RenderGhost();
     BlueGhost->Render();

@@ -18,6 +18,7 @@ void Ghost::UpdateGhost(int points) {
         case 4: sourceX = 120; break;
     }
 
+    // all the movement mechanics HERE!
     int destX = 400, destY = 325;
 
     sourceRectangle.h = 40;

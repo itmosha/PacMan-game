@@ -1,5 +1,6 @@
 #pragma once
 #include "Game.h"
+#include "CollisionChecker.h"
 
 class GameObject {
 public:
@@ -17,6 +18,7 @@ protected:
 
     SDL_Texture *objectTexture;
     SDL_Rect sourceRectangle, destinationRectangle;
+    CollisionChecker* collisionChecker;
 };
 
 
