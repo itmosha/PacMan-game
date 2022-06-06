@@ -64,7 +64,7 @@ void Player::UpdatePlayer() {
     destinationRectangle.y = yPos;
 }
 
-bool Player::FoodCollisions() {
+int Player::FoodCollisions() {
     int playerCellX = (xPos + 20) / 30, playerCellY = (yPos + 20)/30;
     switch (direction) {
         case 1: {
@@ -72,7 +72,7 @@ bool Player::FoodCollisions() {
             if (any_food) {
                 if ((xPos + 20) % 30 >= 25) {
                     food->eat_food(playerCellX + 1, playerCellY);
-                    return true;
+                    return any_food;
                 }
             }
         } break;
@@ -81,7 +81,7 @@ bool Player::FoodCollisions() {
             if (any_food) {
                 if ((yPos + 20) % 30 >= 25) {
                     food->eat_food(playerCellX, playerCellY + 1);
-                    return true;
+                    return any_food;
                 }
             }
         }
@@ -90,7 +90,7 @@ bool Player::FoodCollisions() {
             if (any_food) {
                 if ((xPos - 20) % 30 >= 25) {
                     food->eat_food(playerCellX - 1, playerCellY);
-                    return true;
+                    return any_food;
                 }
             }
         }
@@ -99,22 +99,34 @@ bool Player::FoodCollisions() {
             if (any_food) {
                 if ((yPos - 20) % 30 >= 25) {
                     food->eat_food(playerCellX, playerCellY - 1);
-                    return true;
+                    return any_food;
                 }
             }
         }
         default: break;
     }
-    return false;
+    return 0;
 }
 
-bool Player::GhostCollisions(Ghost *ghosts[4]) {
+// 0 - no coolisions
+// 1 - collision and -1 life
+// 2 - collision and killed ghost
+int Player::GhostCollisions(Ghost *ghosts[4], int AbleToKill) {
 
     for (int i = 0; i < 4; ++i) {
-        if (ghosts[i]->GetX() + 40 >= xPos && ghosts[i]->GetX() <= xPos + 40 &&
-            ghosts[i]->GetY() + 40 >= yPos && ghosts[i]->GetY() <= yPos + 40) return true;
+        if (ghosts[i]->CheckActive()) {
+            if (ghosts[i]->GetX() + 40 >= xPos && ghosts[i]->GetX() <= xPos + 40 &&
+            ghosts[i]->GetY() + 40 >= yPos && ghosts[i]->GetY() <= yPos + 40)  {
+                if (AbleToKill) {
+                    ghosts[i]->UnableGhost();
+                    ghosts[i]->Kill();
+                    return 2;
+                }
+                else return 1;
+            }
+        }
     }
-    return false;
+    return 0;
 }
 
 void Player::RenderPlayer() {

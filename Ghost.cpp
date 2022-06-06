@@ -9,6 +9,7 @@ Ghost::Ghost(int ghost_type) {
     xPos = 0;
     yPos = 0;
 
+    killed = false;
     is_active = false;
     type = ghost_type;
     direction = 0;
@@ -107,6 +108,12 @@ void Ghost::UpdateGhost(int points) {
     Update(40, 40, sourceX, 0, destinationRectangle.x, destinationRectangle.y);
 }
 
+bool Ghost::CheckActive() { return is_active; }
+void Ghost::UnableGhost() { is_active = false; }
+void Ghost::Kill(){ killed = true; };
+
 void Ghost::RenderGhost() {
-    SDL_RenderCopy(Game::renderer, objectTexture, &sourceRectangle, &destinationRectangle);
+    if (!killed) {
+        SDL_RenderCopy(Game::renderer, objectTexture, &sourceRectangle, &destinationRectangle);
+    }
 }

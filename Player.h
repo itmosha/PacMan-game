@@ -16,8 +16,8 @@ public:
     ~Player();
 
     void UpdatePlayer();
-    bool GhostCollisions(Ghost* ghosts[4]);
-    bool FoodCollisions();
+    int GhostCollisions(Ghost* ghosts[4], int ableToKill);
+    int FoodCollisions();
 
     void RenderPlayer();
     void SetDirection(int dir);

@@ -84,10 +84,23 @@ void Game::handleEvents() {
 
 void Game::update() {
     player->UpdatePlayer();
-    if (player->FoodCollisions()) points++;
-    if (!deathCooldown && player->GhostCollisions(ghosts)) {
-        deathCooldown = 180;
-        lives--;
+
+    int food_eaten = player->FoodCollisions();
+    if (food_eaten) {
+        points++;
+        if (food_eaten == 2) ableToKill = 300;
+    }
+
+    int killEvent = player->GhostCollisions(ghosts, ableToKill);
+
+    if (killEvent) {
+        if (killEvent == 1 && !deathCooldown) {
+            lives--;
+            deathCooldown = 180;
+        }
+        else {
+            ableToKill = 0;
+        }
     }
 
     for (auto & ghost : ghosts) ghost->UpdateGhost(points);
@@ -97,6 +110,7 @@ void Game::update() {
 
     for (int i = 0; i < 3; ++i) lives_list[i]->Update(40, 40, 0, 0, 220 + i*50,932);
     if (deathCooldown) deathCooldown--;
+    if (ableToKill) ableToKill--;
 }
 
 void Game::render() {
