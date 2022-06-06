@@ -1,15 +1,21 @@
 #include "Ghost.h"
 #include "TextureCreator.h"
+#include "vector"
 
 Ghost::Ghost(int ghost_type) {
     objectTexture = TextureCreator::loadTexture("../assets/Ghosts.png");
+    collisionCheckerGhost = new CollisionChecker;
+
     xPos = 0;
     yPos = 0;
+
     is_active = false;
     type = ghost_type;
+    direction = 0;
 }
 
 void Ghost::UpdateGhost(int points) {
+
     int sourceX;
     switch(type) {
         case 1: sourceX = 0; break;
@@ -18,20 +24,6 @@ void Ghost::UpdateGhost(int points) {
         case 4: sourceX = 120; break;
     }
 
-    // all the movement mechanics HERE!
-    int destX = 400, destY = 325;
-
-    sourceRectangle.h = 40;
-    sourceRectangle.w = 40;
-    sourceRectangle.x = sourceX;
-    sourceRectangle.y = 0;
-
-    destinationRectangle.h = 40;
-    destinationRectangle.w = 40;
-    destinationRectangle.x = xPos;
-    destinationRectangle.y = yPos;
-
-    Update(40, 40, sourceX, 0, destinationRectangle.x, destinationRectangle.y);
 
     switch (type) {
         case 1: {
@@ -73,6 +65,46 @@ void Ghost::UpdateGhost(int points) {
         }
         default: break;
     }
+
+    if (is_active && !direction) {
+        std::vector<int> possibleDirections;
+        if (!collisionCheckerGhost->RightWallCollision(xPos, yPos)) possibleDirections.push_back(1);
+        if (!collisionCheckerGhost->DownWallCollision(xPos, yPos)) possibleDirections.push_back(2);
+        if (!collisionCheckerGhost->LeftWallCollision(xPos, yPos)) possibleDirections.push_back(3);
+        if (!collisionCheckerGhost->UpWallCollision(xPos, yPos)) possibleDirections.push_back(4);
+
+        direction = possibleDirections[clock() % possibleDirections.size()];
+    }
+        switch (direction) {
+            case 1: {
+                if (!collisionCheckerGhost->RightWallCollision(xPos, yPos)) xPos++;
+                else direction = 0;
+            } break;
+            case 2: {
+                if (!collisionCheckerGhost->DownWallCollision(xPos, yPos)) yPos++;
+                else direction = 0;
+            } break;
+            case 3: {
+                if (!collisionCheckerGhost->LeftWallCollision(xPos, yPos)) xPos--;
+                else direction = 0;
+            } break;
+            case 4: {
+                if (!collisionCheckerGhost->UpWallCollision(xPos, yPos)) yPos--;
+                else direction = 0;
+            } break;
+            default: break;
+    }
+    sourceRectangle.h = 40;
+    sourceRectangle.w = 40;
+    sourceRectangle.x = sourceX;
+    sourceRectangle.y = 0;
+
+    destinationRectangle.h = 40;
+    destinationRectangle.w = 40;
+    destinationRectangle.x = xPos;
+    destinationRectangle.y = yPos;
+
+    Update(40, 40, sourceX, 0, destinationRectangle.x, destinationRectangle.y);
 }
 
 void Ghost::RenderGhost() {

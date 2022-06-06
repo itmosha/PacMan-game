@@ -10,7 +10,8 @@
 
 SDL_Renderer* Game::renderer = nullptr;
 Map* map;
-static int player_cooldown = 0;
+static int deathCooldown = 0;
+static int ableToKill = 0;
 
 TextObject* score;
 TextObject* Lives;
@@ -84,9 +85,8 @@ void Game::handleEvents() {
 void Game::update() {
     player->UpdatePlayer();
     if (player->FoodCollisions()) points++;
-    if (!player_cooldown && player->GhostCollisions(ghosts)) {
-        std::cout << "Collision!" << '\n';
-        player_cooldown = 180;
+    if (!deathCooldown && player->GhostCollisions(ghosts)) {
+        deathCooldown = 180;
         lives--;
     }
 
@@ -96,7 +96,7 @@ void Game::update() {
     Lives->Update(50, 180, 40, 925, "Lifes: ");
 
     for (int i = 0; i < 3; ++i) lives_list[i]->Update(40, 40, 0, 0, 220 + i*50,932);
-    if (player_cooldown) player_cooldown--;
+    if (deathCooldown) deathCooldown--;
 }
 
 void Game::render() {

@@ -36,16 +36,6 @@ void Player::UpdatePlayer() {
             break;
     }
 
-    sourceRectangle.h = 40;
-    sourceRectangle.w = 40;
-    sourceRectangle.x = sourceX;
-    sourceRectangle.y = 0;
-
-    destinationRectangle.h = 40;
-    destinationRectangle.w = 40;
-    destinationRectangle.x = xPos;
-    destinationRectangle.y = yPos;
-
     switch (direction) {
         case 1:
             if (!collisionCheckerPlayer->RightWallCollision(xPos, yPos)) xPos += PLAYER_SPEED;
@@ -62,6 +52,16 @@ void Player::UpdatePlayer() {
         default:
             break;
     }
+
+    sourceRectangle.h = 40;
+    sourceRectangle.w = 40;
+    sourceRectangle.x = sourceX;
+    sourceRectangle.y = 0;
+
+    destinationRectangle.h = 40;
+    destinationRectangle.w = 40;
+    destinationRectangle.x = xPos;
+    destinationRectangle.y = yPos;
 }
 
 bool Player::FoodCollisions() {
