@@ -8,15 +8,15 @@ GameObject::GameObject(const char *texturesheet, int x, int y) {
     yPos = y;
 }
 
-void GameObject::Update(int H, int W, int sourceX, int sourceY, int destX, int destY) {
+void GameObject::Update(int sourceH, int sourceW, int sourceX, int sourceY, int destH, int destW, int destX, int destY) {
 
-    sourceRectangle.h = H;
-    sourceRectangle.w = W;
+    sourceRectangle.h = sourceH;
+    sourceRectangle.w = sourceW;
     sourceRectangle.x = sourceX;
     sourceRectangle.y = sourceY;
 
-    destinationRectangle.h = H;
-    destinationRectangle.w = W;
+    destinationRectangle.h = destH;
+    destinationRectangle.w = destW;
     destinationRectangle.x = destX;
     destinationRectangle.y = destY;
 }

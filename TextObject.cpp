@@ -6,6 +6,10 @@ TextObject::TextObject(const char *font_path, int size, int x, int y) {
     font = TTF_OpenFont(font_path, size);
     color = {255, 255, 255};
 
+    if (font == nullptr) {
+        std::cout << SDL_GetError() << '\n';
+    }
+
     xPos = x;
     yPos = y;
 }
@@ -34,7 +38,7 @@ char* TextObject::score_toString(int scr) {
     int i = 2;
 
     char* string_text = new char[10];
-    string_text[0] = 's'; string_text[1] = 'c'; string_text[2] = 'o'; string_text[3] = 'r'; string_text[4] = 'e';
+    string_text[0] = 'S'; string_text[1] = 'C'; string_text[2] = 'O'; string_text[3] = 'R'; string_text[4] = 'E';
     string_text[5] = ':'; string_text[6] = ' ';
 
     if (scr == 0) {

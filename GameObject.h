@@ -1,7 +1,5 @@
 #pragma once
 #include "Game.h"
-//#include "SDL.h"
-//#include "SDL_image.h"
 #include "CollisionChecker.h"
 
 class GameObject {
@@ -13,7 +11,7 @@ public:
 
     int GetX() { return xPos; }
     int GetY() { return yPos; }
-    void Update(int H, int W, int sourceX, int sourceY, int destX, int destY);
+    void Update(int sourceH, int sourceW, int sourceX, int sourceY, int destH, int destW, int destX, int destY);
 
     void Render();
 protected:

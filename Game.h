@@ -1,5 +1,4 @@
 #pragma once
-//#include "GameObject.h"
 #include "SDL.h"
 #include "SDL_image.h"
 #include "SDL_ttf.h"
@@ -24,6 +23,8 @@ public:
     void update();
     void render();
     void clean();
+
+    void ShowFirstScreen();
 
     bool running() const { return isRunning; };
 

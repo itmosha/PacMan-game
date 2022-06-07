@@ -7,17 +7,24 @@
 #include "TextObject.h"
 #include "Ghost.h"
 #include "Player.h"
+#include "Page.h"
 
 SDL_Renderer* Game::renderer = nullptr;
 Map* map;
 static int deathCooldown = 0;
 static int ableToKill = 0;
+static int firstScreenTime = 300;
+static bool in_menu = true;
 
 TextObject* score;
 TextObject* Lives;
 
 Player* player;
 Ghost* ghosts[4];
+
+Page* firstScreen;
+TextObject* PacManText;
+GameObject* PacManLogo;
 
 GameObject* lives_list[3];
 
@@ -58,6 +65,11 @@ void Game::init(const char *title, int xPos, int yPos, int width, int height) {
     score = new TextObject("../fonts/ka1.ttf", 30, 0, 0);
     Lives = new TextObject("../fonts/ka1.ttf", 30, 0, 0);
 
+    SDL_Rect s{0, 0, 840, 990}, d{0, 0, 840, 990};
+    firstScreen = new Page(s, d, "../assets/LoadingScreen.png");
+    PacManText = new TextObject("../fonts/ka1.ttf", 50, 0, 0);
+    PacManLogo = new GameObject("../assets/Character.png", 0, 0);
+
     map = new Map();
 }
 
@@ -83,34 +95,42 @@ void Game::handleEvents() {
 }
 
 void Game::update() {
-    player->UpdatePlayer();
+    if (!in_menu) {
+        player->UpdatePlayer();
 
-    int food_eaten = player->FoodCollisions();
-    if (food_eaten) {
-        points++;
-        if (food_eaten == 2) ableToKill = 300;
-    }
-
-    int killEvent = player->GhostCollisions(ghosts, ableToKill);
-
-    if (killEvent) {
-        if (killEvent == 1 && !deathCooldown) {
-            lives--;
-            deathCooldown = 180;
+        int food_eaten = player->FoodCollisions();
+        if (food_eaten) {
+            points++;
+            if (food_eaten == 2) ableToKill = 300;
         }
-        else {
-            ableToKill = 0;
+
+        int killEvent = player->GhostCollisions(ghosts, ableToKill);
+
+        if (killEvent) {
+            if (killEvent == 1 && !deathCooldown) {
+                lives--;
+                deathCooldown = 180;
+            } else {
+                ableToKill = 0;
+            }
         }
+
+        for (auto &ghost: ghosts) ghost->UpdateGhost(points);
+
+        for (int i = 0; i < 3; ++i) lives_list[i]->Update(40, 40, 0, 0, 40, 40, 220 + i*50,932);
+        if (deathCooldown) deathCooldown--;
+        if (ableToKill) ableToKill--;
     }
-
-    for (auto & ghost : ghosts) ghost->UpdateGhost(points);
-
     score->Update(50, 240, 540, 925, TextObject::score_toString(points));
-    Lives->Update(50, 180, 40, 925, "Lifes: ");
+    Lives->Update(50, 180, 40, 925, "LIFES: ");
 
-    for (int i = 0; i < 3; ++i) lives_list[i]->Update(40, 40, 0, 0, 220 + i*50,932);
-    if (deathCooldown) deathCooldown--;
-    if (ableToKill) ableToKill--;
+
+    if (firstScreenTime) {
+        PacManText->Update(100, 640, 100, 50, "PAC-MAN");
+        PacManLogo->Update(40, 40, 40, 0, 280, 280, 280, 200);
+        firstScreenTime--;
+    }
+    else in_menu = false;
 }
 
 void Game::render() {
@@ -126,6 +146,12 @@ void Game::render() {
     Lives->Render();
 
     for (int i = 0; i < lives; ++i) lives_list[i]->Render();
+
+    if (firstScreenTime) {
+        firstScreen->ShowPage();
+        PacManLogo->Render();
+        PacManText->Render();
+    }
     SDL_RenderPresent(renderer);
 }
 

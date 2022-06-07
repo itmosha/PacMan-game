@@ -105,7 +105,7 @@ void Ghost::UpdateGhost(int points) {
     destinationRectangle.x = xPos;
     destinationRectangle.y = yPos;
 
-    Update(40, 40, sourceX, 0, destinationRectangle.x, destinationRectangle.y);
+    Update(40, 40, sourceX, 0, 40, 40, destinationRectangle.x, destinationRectangle.y);
 }
 
 bool Ghost::CheckActive() { return is_active; }
