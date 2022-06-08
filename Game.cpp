@@ -9,18 +9,22 @@
 #include "Player.h"
 #include "Page.h"
 
-SDL_Renderer* Game::renderer = nullptr;
-Map* map;
-static int deathCooldown = 0;
-static int ableToKill = 0;
-static int firstScreenTime = 120;
+char* playerName = new char[16];
 
-bool not_in_game = true;
+int deathCooldown = 0;
+int ableToKill = 0;
+int firstScreenTime = 120;
+
+bool in_game = false;
 bool entering_name = false;
 bool in_main_menu = false;
-char* playerName = new char[16];
+bool paused = false;
+
 int playerNameSize = 0;
 int nameBoxWidth = 0;
+
+SDL_Renderer* Game::renderer = nullptr;
+Map* map;
 
 GameObject* nameBorder;
 TextObject* playerNameBox;
@@ -32,6 +36,7 @@ Ghost* ghosts[4];
 
 Page* loadingScreen;
 Page* nameScreen;
+Page* pauseScreen;
 
 GameObject* lives_list[3];
 
@@ -78,6 +83,7 @@ void Game::init(const char *title, int xPos, int yPos, int width, int height) {
     loadingScreen = new Page("../assets/LoadingScreen.png");
     nameScreen = new Page("../assets/NameScreen.png");
     nameBorder = new GameObject("../assets/NameBox.png", 0, 0);
+    pauseScreen = new Page("../assets/NameScreen.png");
 
     map = new Map();
 }
@@ -92,16 +98,25 @@ void Game::handleEvents() {
             break;
         case SDL_KEYDOWN: {
             switch (event.key.keysym.sym) {
-                case SDLK_d: player->SetDirection(1); break;
-                case SDLK_s: player->SetDirection(2); break;
-                case SDLK_a: player->SetDirection(3); break;
-                case SDLK_w: player->SetDirection(4); break;
+                case SDLK_d: if (in_game) player->SetDirection(1); break;
+                case SDLK_s: if (in_game) player->SetDirection(2); break;
+                case SDLK_a: if (in_game) player->SetDirection(3); break;
+                case SDLK_w: if (in_game) player->SetDirection(4); break;
+                case SDLK_ESCAPE: {
+                    if (in_game) {
+                        in_game = false;
+                        paused = true;
+                        }
+                    else {
+                        in_game = true;
+                        paused = false;
+                        }
+                    } break;
+                }
             }
-        }
         default:
             break;
     }
-
     if (entering_name) {
 
         switch (event.type) {
@@ -136,7 +151,7 @@ void Game::handleEvents() {
 }
 
 void Game::update() {
-    if (!not_in_game) {
+    if (in_game) {
         player->UpdatePlayer();
 
         int food_eaten = player->FoodCollisions();
@@ -170,14 +185,20 @@ void Game::update() {
     if (firstScreenTime) {
         firstScreenTime--;
     }
-    else if (playerNameSize == 0) entering_name = true;
-    else { in_main_menu = false; not_in_game = false; }
+
+    if (playerNameSize == 0) entering_name = true;
+    else { in_main_menu = true; }
+
+    in_main_menu = false; // FIX!!!
+
+    if (!entering_name && !in_main_menu && !paused) in_game = true;
+
 }
 
 void Game::render() {
     SDL_RenderClear(renderer);
 
-    if (!not_in_game) {
+    if (in_game) {
         map->drawMap();
 
         player->RenderPlayer();
@@ -192,10 +213,13 @@ void Game::render() {
     if (firstScreenTime) {
         loadingScreen->ShowPage();
     }
-    if (entering_name) {
+    else if (entering_name) {
         nameScreen->ShowPage();
         playerNameBox->Render();
         nameBorder->Render();
+    }
+    else if (paused) {
+        pauseScreen->ShowPage();
     }
     SDL_RenderPresent(renderer);
 }
