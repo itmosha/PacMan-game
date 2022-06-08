@@ -11,6 +11,7 @@ private:
 
 public:
     Page(SDL_Rect src, SDL_Rect dest, const char* path);
+    Page(const char* path);
     ~Page();
 
     void ShowPage();

@@ -78,19 +78,19 @@ void Ghost::UpdateGhost(int points) {
     }
         switch (direction) {
             case 1: {
-                if (!collisionCheckerGhost->RightWallCollision(xPos, yPos)) xPos++;
+                if (!collisionCheckerGhost->RightWallCollision(xPos, yPos)) xPos+= GHOST_SPEED;
                 else direction = 0;
             } break;
             case 2: {
-                if (!collisionCheckerGhost->DownWallCollision(xPos, yPos)) yPos++;
+                if (!collisionCheckerGhost->DownWallCollision(xPos, yPos)) yPos+= GHOST_SPEED;
                 else direction = 0;
             } break;
             case 3: {
-                if (!collisionCheckerGhost->LeftWallCollision(xPos, yPos)) xPos--;
+                if (!collisionCheckerGhost->LeftWallCollision(xPos, yPos)) xPos-= GHOST_SPEED;
                 else direction = 0;
             } break;
             case 4: {
-                if (!collisionCheckerGhost->UpWallCollision(xPos, yPos)) yPos--;
+                if (!collisionCheckerGhost->UpWallCollision(xPos, yPos)) yPos-= GHOST_SPEED;
                 else direction = 0;
             } break;
             default: break;

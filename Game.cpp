@@ -13,18 +13,25 @@ SDL_Renderer* Game::renderer = nullptr;
 Map* map;
 static int deathCooldown = 0;
 static int ableToKill = 0;
-static int firstScreenTime = 300;
-static bool in_menu = true;
+static int firstScreenTime = 120;
 
+bool not_in_game = true;
+bool entering_name = false;
+bool in_main_menu = false;
+char* playerName = new char[16];
+int playerNameSize = 0;
+int nameBoxWidth = 0;
+
+GameObject* nameBorder;
+TextObject* playerNameBox;
 TextObject* score;
 TextObject* Lives;
 
 Player* player;
 Ghost* ghosts[4];
 
-Page* firstScreen;
-TextObject* PacManText;
-GameObject* PacManLogo;
+Page* loadingScreen;
+Page* nameScreen;
 
 GameObject* lives_list[3];
 
@@ -42,7 +49,7 @@ void Game::init(const char *title, int xPos, int yPos, int width, int height) {
 
         renderer = SDL_CreateRenderer(window, -1, 0);
         if (renderer) {
-            SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+            SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
             std::cout << "Renderer: OK" << '\n';
         }
         isRunning = true;
@@ -57,18 +64,20 @@ void Game::init(const char *title, int xPos, int yPos, int width, int height) {
     SDL_SetWindowIcon(window, tmpSurface);
     SDL_FreeSurface(tmpSurface);
 
+
     for (auto & i : lives_list) i = new GameObject("../assets/CharacterLife.png", 0, 0);
 
     player = new Player();
     for (int i = 0; i < 4; ++i) ghosts[i] = new Ghost(i+1);
 
+    playerNameBox = new TextObject("../fonts/ka1.ttf", 30, 0, 0);
+
     score = new TextObject("../fonts/ka1.ttf", 30, 0, 0);
     Lives = new TextObject("../fonts/ka1.ttf", 30, 0, 0);
 
-    SDL_Rect s{0, 0, 840, 990}, d{0, 0, 840, 990};
-    firstScreen = new Page(s, d, "../assets/LoadingScreen.png");
-    PacManText = new TextObject("../fonts/ka1.ttf", 50, 0, 0);
-    PacManLogo = new GameObject("../assets/Character.png", 0, 0);
+    loadingScreen = new Page("../assets/LoadingScreen.png");
+    nameScreen = new Page("../assets/NameScreen.png");
+    nameBorder = new GameObject("../assets/NameBox.png", 0, 0);
 
     map = new Map();
 }
@@ -92,10 +101,42 @@ void Game::handleEvents() {
         default:
             break;
     }
+
+    if (entering_name) {
+
+        switch (event.type) {
+            case SDL_KEYDOWN: {
+                switch (event.key.keysym.sym) {
+                    case SDLK_RETURN: {
+                        entering_name = false;
+                        in_main_menu = true;
+                    } break;
+                    case SDLK_BACKSPACE: {
+                        if (playerNameSize > 0) {
+                            playerName[playerNameSize - 1] = '\0';
+                            playerNameSize--;
+                            nameBoxWidth -= 40;
+                        }
+                    } break;
+                    default: {
+                        if (playerNameSize < 16) {
+                            char c = TextObject::event_to_char(event, playerNameSize);
+                            if (c != '!') {
+                                playerName[playerNameSize] = c;
+                                playerNameSize++;
+                                nameBoxWidth += 40;
+                            }
+                        }
+                    } break;
+                }
+            } break;
+            default: break;
+        }
+    }
 }
 
 void Game::update() {
-    if (!in_menu) {
+    if (!not_in_game) {
         player->UpdatePlayer();
 
         int food_eaten = player->FoodCollisions();
@@ -123,34 +164,38 @@ void Game::update() {
     }
     score->Update(50, 240, 540, 925, TextObject::score_toString(points));
     Lives->Update(50, 180, 40, 925, "LIFES: ");
-
+    playerNameBox->Update(60, nameBoxWidth, 420-nameBoxWidth/2, 465, playerName);
+    nameBorder->Update(80, 660, 0, 0, 80, 670, 82, 451);
 
     if (firstScreenTime) {
-        PacManText->Update(100, 640, 100, 50, "PAC-MAN");
-        PacManLogo->Update(40, 40, 40, 0, 280, 280, 280, 200);
         firstScreenTime--;
     }
-    else in_menu = false;
+    else if (playerNameSize == 0) entering_name = true;
+    else { in_main_menu = false; not_in_game = false; }
 }
 
 void Game::render() {
     SDL_RenderClear(renderer);
 
-    map->drawMap();
+    if (!not_in_game) {
+        map->drawMap();
 
-    player->RenderPlayer();
+        player->RenderPlayer();
 
-    for (auto & ghost : ghosts) ghost->RenderGhost();
+        for (auto &ghost: ghosts) ghost->RenderGhost();
 
-    score->Render();
-    Lives->Render();
+        score->Render();
+        Lives->Render();
 
-    for (int i = 0; i < lives; ++i) lives_list[i]->Render();
-
+        for (int i = 0; i < lives; ++i) lives_list[i]->Render();
+    }
     if (firstScreenTime) {
-        firstScreen->ShowPage();
-        PacManLogo->Render();
-        PacManText->Render();
+        loadingScreen->ShowPage();
+    }
+    if (entering_name) {
+        nameScreen->ShowPage();
+        playerNameBox->Render();
+        nameBorder->Render();
     }
     SDL_RenderPresent(renderer);
 }

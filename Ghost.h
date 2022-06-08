@@ -3,6 +3,8 @@
 #include "Game.h"
 //#include "CollisionChecker.h"
 
+const int GHOST_SPEED = 1;
+
 class Ghost : public GameObject {
 private:
     bool killed;

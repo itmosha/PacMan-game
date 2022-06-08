@@ -10,6 +10,7 @@ public:
     void Render();
 
     static char* score_toString(int scr);
+    static char event_to_char(SDL_Event event, int playerNameSize);
 private:
     int xPos;
     int yPos;
