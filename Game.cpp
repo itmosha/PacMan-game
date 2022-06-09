@@ -19,6 +19,7 @@ bool in_main_menu = false;
 bool paused = false;
 bool in_records = false;
 bool in_help_page = false;
+bool win = false;
 
 int playerNameSize = 0;
 int nameBoxWidth = 0;
@@ -40,6 +41,7 @@ Page* pauseScreen;
 Page* mainMenu;
 Page* recordsScreen;
 Page* helpScreen;
+Page* winScreen;
 
 Button* startGameButton;
 Button* changePlayerButton;
@@ -50,6 +52,9 @@ Button* exitMenuButton;
 Button* continueButton;
 Button* exitGameButton;
 
+Button* replayWinButton;
+Button* exitWinButton;
+
 GameObject* startGameButtonBorder;
 GameObject* changePlayerButtonBorder;
 GameObject* recordsButtonBorder;
@@ -58,6 +63,9 @@ GameObject* exitMenuButtonBorder;
 
 GameObject* continueButtonBorder;
 GameObject* exitGameButtonBorder;
+
+GameObject* replayWinButtonBorder;
+GameObject* exitWinButtonBorder;
 
 GameObject* lives_list[3];
 
@@ -103,6 +111,7 @@ void Game::init(const char *title, int xPos, int yPos, int width, int height) {
 
     SDL_Rect sPause{0, 0, 640, 390}, dPause{100, 300, 640, 390};
     pauseScreen = new Page(sPause, dPause, "../assets/PauseScreen.png");
+    winScreen = new Page(sPause, dPause, "../assets/WinScreen.png");
 
     mainMenu = new Page("../assets/MainMenu.png");
     recordsScreen = new Page("../assets/RecordsScreen.png");
@@ -126,11 +135,20 @@ void Game::init(const char *title, int xPos, int yPos, int width, int height) {
     SDL_Rect rContinue{220, 400, 400, 80};
     continueButton = new Button(rContinue);
 
-    SDL_Rect  rGExit{220, 500, 400, 80};
+    SDL_Rect rGExit{220, 500, 400, 80};
     exitGameButton = new Button(rGExit);
+
+    SDL_Rect rWReplay{220, 400, 400, 80};
+    replayWinButton = new Button(rWReplay);
+
+    SDL_Rect rWExit{220, 500, 400, 80};
+    exitWinButton = new Button(rWExit);
 
     continueButtonBorder = new GameObject("../assets/MainMenuButtonBox.png", 0, 0);
     exitGameButtonBorder = new GameObject("../assets/MainMenuButtonBox.png", 0, 0);
+
+    replayWinButtonBorder = new GameObject("../assets/MainMenuButtonBox.png", 0, 0);
+    exitWinButtonBorder = new GameObject("../assets/MainMenuButtonBox.png", 0, 0);
 
     startGameButtonBorder = new GameObject("../assets/MainMenuButtonBox.png", 0, 0);
     changePlayerButtonBorder = new GameObject("../assets/MainMenuButtonBox.png", 0, 0);
@@ -274,7 +292,7 @@ void Game::handleEvents() {
                         paused = false;
                         ResetGame();
                         player->ResetPlayer();
-                        for (int i = 0; i < 4; ++i) ghosts[i]->ResetGhost();
+                        for (auto & ghost : ghosts) ghost->ResetGhost();
                     }
                 }
             } break;
@@ -292,6 +310,36 @@ void Game::handleEvents() {
                 }
             } break;
         }
+    }
+
+    else if (win) {
+        switch (event.type) {
+            case SDL_MOUSEBUTTONDOWN: {
+                if (event.button.button == SDL_BUTTON_LEFT) {
+                    if (replayWinButton->checkIfPressed(event.button.x, event.button.y)) {
+                        ResetGame();
+                        player->ResetPlayer();
+                        for (auto & ghost : ghosts) ghost->ResetGhost();
+
+                        in_game = true;
+                        win = false;
+                    }
+                    if (exitWinButton->checkIfPressed(event.button.x, event.button.y)) {
+                        ResetGame();
+                        player->ResetPlayer();
+                        for (auto & ghost : ghosts) ghost->ResetGhost();
+
+                        in_main_menu = true;
+                        win = false;
+                    }
+                }
+            } break;
+        }
+    }
+
+    if (points == 244) {
+        win = true;
+        in_game = false;
     }
 }
 
@@ -336,6 +384,9 @@ void Game::update() {
     helpButtonBorder->Update(80, 400, 0, 0, 80, 400, 220, 600);
     exitMenuButtonBorder->Update(80, 400, 0, 0, 80, 400, 220, 700);
 
+    replayWinButtonBorder->Update(80, 400, 0, 0, 80, 400, 220, 420);
+    exitWinButtonBorder->Update(80, 400, 0, 0, 80, 400, 220, 520);
+
     if (firstScreenTime) firstScreenTime--;
     if (playerNameSize == 0) entering_name = true;
 }
@@ -343,7 +394,7 @@ void Game::update() {
 void Game::render() {
     SDL_RenderClear(renderer);
 
-    if (in_game || paused) {
+    if (in_game || paused || win) {
         map->drawMap();
 
         player->RenderPlayer();
@@ -359,6 +410,10 @@ void Game::render() {
             pauseScreen->ShowPage();
             continueButtonBorder->Render();
             exitGameButtonBorder->Render();
+        } else if (win) {
+            winScreen->ShowPage();
+            replayWinButtonBorder->Render();
+            exitWinButtonBorder->Render();
         }
     }
     else if (firstScreenTime) {
@@ -398,7 +453,7 @@ Game::Game() {
     lives = 3;
     deathCooldown = 0;
     ableToKill = 0;
-    firstScreenTime = 180;
+    firstScreenTime = 5;
 }
 
 void Game::ResetGame() {
