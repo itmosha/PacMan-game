@@ -20,6 +20,8 @@ public:
     void UnableGhost();
     void Kill();
 
+    void ResetGhost();
+
     void UpdateGhost(int points);
     void RenderGhost();
 };

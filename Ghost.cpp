@@ -15,6 +15,32 @@ Ghost::Ghost(int ghost_type) {
     direction = 0;
 }
 
+void Ghost::ResetGhost() {
+    is_active = false;
+    killed = false;
+    direction = 0;
+
+    switch (type) {
+        case 1: {
+            xPos = 400;
+            yPos = 325;
+        } break;
+        case 2: {
+            xPos = 345;
+            yPos = 415;
+        } break;
+        case 3: {
+            xPos = 400;
+            yPos = 415;
+        } break;
+        case 4: {
+            xPos = 455;
+            yPos = 415;
+        } break;
+        default: break;
+    }
+}
+
 void Ghost::UpdateGhost(int points) {
 
     int sourceX;

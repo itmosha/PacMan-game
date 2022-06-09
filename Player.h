@@ -19,6 +19,8 @@ public:
     int GhostCollisions(Ghost* ghosts[4], int ableToKill);
     int FoodCollisions();
 
+    void ResetPlayer();
+
     void RenderPlayer();
     void SetDirection(int dir);
 };

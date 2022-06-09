@@ -13,6 +13,14 @@ Player::Player() {
     direction = 0;
 }
 
+void Player::ResetPlayer() {
+    xPos = 400;
+    yPos = 685;
+    direction = 0;
+    delete food;
+    food = new Food();
+}
+
 void Player::SetDirection(int dir) { direction = dir; }
 
 void Player::UpdatePlayer() {

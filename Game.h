@@ -11,6 +11,9 @@ private:
     SDL_Window *window;
     int points;
     int lives;
+    int deathCooldown;
+    int ableToKill;
+    int firstScreenTime;
 public:
     Game();
     ~Game();
@@ -23,6 +26,8 @@ public:
     void update();
     void render();
     void clean();
+
+    void ResetGame();
 
     void ShowFirstScreen();
 

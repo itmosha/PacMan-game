@@ -12,9 +12,6 @@
 
 char* playerName = new char[16];
 
-int deathCooldown = 0;
-int ableToKill = 0;
-int firstScreenTime = 5;
 
 bool in_game = false;
 bool entering_name = false;
@@ -50,18 +47,20 @@ Button* recordsButton;
 Button* helpButton;
 Button* exitMenuButton;
 
+Button* continueButton;
+Button* exitGameButton;
+
 GameObject* startGameButtonBorder;
 GameObject* changePlayerButtonBorder;
 GameObject* recordsButtonBorder;
 GameObject* helpButtonBorder;
 GameObject* exitMenuButtonBorder;
 
+GameObject* continueButtonBorder;
+GameObject* exitGameButtonBorder;
+
 GameObject* lives_list[3];
 
-Game::Game() { points = 0; lives = 3; }
-void Game::TakeLife() {lives--;}
-void Game::AddPoint() {points++;}
-Game::~Game() { }
 
 void Game::init(const char *title, int xPos, int yPos, int width, int height) {
     if (SDL_Init(SDL_INIT_EVERYTHING) == 0){
@@ -101,7 +100,10 @@ void Game::init(const char *title, int xPos, int yPos, int width, int height) {
 
     loadingScreen = new Page("../assets/LoadingScreen.png");
     nameScreen = new Page("../assets/NameScreen.png");
-    pauseScreen = new Page("../assets/PauseScreen.png");
+
+    SDL_Rect sPause{0, 0, 640, 390}, dPause{100, 300, 640, 390};
+    pauseScreen = new Page(sPause, dPause, "../assets/PauseScreen.png");
+
     mainMenu = new Page("../assets/MainMenu.png");
     recordsScreen = new Page("../assets/RecordsScreen.png");
     helpScreen = new Page("../assets/HelpScreen.png");
@@ -120,6 +122,15 @@ void Game::init(const char *title, int xPos, int yPos, int width, int height) {
 
     SDL_Rect rExit{100, 700, 400, 80};
     exitMenuButton = new Button(rExit);
+
+    SDL_Rect rContinue{220, 400, 400, 80};
+    continueButton = new Button(rContinue);
+
+    SDL_Rect  rGExit{220, 500, 400, 80};
+    exitGameButton = new Button(rGExit);
+
+    continueButtonBorder = new GameObject("../assets/MainMenuButtonBox.png", 0, 0);
+    exitGameButtonBorder = new GameObject("../assets/MainMenuButtonBox.png", 0, 0);
 
     startGameButtonBorder = new GameObject("../assets/MainMenuButtonBox.png", 0, 0);
     changePlayerButtonBorder = new GameObject("../assets/MainMenuButtonBox.png", 0, 0);
@@ -221,7 +232,6 @@ void Game::handleEvents() {
                         case SDLK_ESCAPE: {
                             in_game = false;
                             paused = true;
-                            std::cout << in_game << " " << paused << '\n';
                         } break;
                     }
                 } break;
@@ -249,6 +259,22 @@ void Game::handleEvents() {
                     case SDLK_ESCAPE: {
                             paused = false;
                             in_game = true;
+                    }
+                }
+            } break;
+            case SDL_MOUSEBUTTONDOWN: {
+                if (event.button.button == SDL_BUTTON_LEFT) {
+                    if (continueButton->checkIfPressed(event.button.x, event.button.y)) {
+                        in_game = true;
+                        paused = false;
+                    }
+                    if (exitGameButton->checkIfPressed(event.button.x, event.button.y)) {
+                        in_game = false;
+                        in_main_menu = true;
+                        paused = false;
+                        ResetGame();
+                        player->ResetPlayer();
+                        for (int i = 0; i < 4; ++i) ghosts[i]->ResetGhost();
                     }
                 }
             } break;
@@ -301,6 +327,9 @@ void Game::update() {
     playerNameBox->Update(60, nameBoxWidth, 420-nameBoxWidth/2, 465, playerName);
     nameBorder->Update(80, 660, 0, 0, 80, 670, 82, 451);
 
+    continueButtonBorder->Update(80, 400, 0, 0, 80, 400, 220, 420);
+    exitGameButtonBorder->Update(80, 400, 0, 0, 80, 400, 220, 520);
+
     startGameButtonBorder->Update(80, 400, 0, 0, 80, 400, 220, 300);
     changePlayerButtonBorder->Update(80, 400, 0, 0, 80, 400, 220, 400);
     recordsButtonBorder->Update(80, 400, 0, 0, 80, 400, 220, 500);
@@ -314,7 +343,7 @@ void Game::update() {
 void Game::render() {
     SDL_RenderClear(renderer);
 
-    if (in_game) {
+    if (in_game || paused) {
         map->drawMap();
 
         player->RenderPlayer();
@@ -325,17 +354,20 @@ void Game::render() {
         Lives->Render();
 
         for (int i = 0; i < lives; ++i) lives_list[i]->Render();
+
+        if (paused) {
+            pauseScreen->ShowPage();
+            continueButtonBorder->Render();
+            exitGameButtonBorder->Render();
+        }
     }
-    if (firstScreenTime) {
+    else if (firstScreenTime) {
         loadingScreen->ShowPage();
     }
     else if (entering_name) {
         nameScreen->ShowPage();
         playerNameBox->Render();
         nameBorder->Render();
-    }
-    else if (paused) {
-        pauseScreen->ShowPage();
     }
     else if (in_main_menu) {
         mainMenu->ShowPage();
@@ -360,3 +392,22 @@ void Game::clean() {
     SDL_Quit();
     std::cout << "Cleaning: OK" << '\n';
 }
+
+Game::Game() {
+    points = 0;
+    lives = 3;
+    deathCooldown = 0;
+    ableToKill = 0;
+    firstScreenTime = 180;
+}
+
+void Game::ResetGame() {
+    points = 0;
+    lives = 3;
+    deathCooldown = 0;
+    ableToKill = 0;
+}
+
+void Game::TakeLife() {lives--;}
+void Game::AddPoint() {points++;}
+Game::~Game() { }
