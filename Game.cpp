@@ -8,12 +8,13 @@
 #include "Ghost.h"
 #include "Player.h"
 #include "Page.h"
+#include "Button.h"
 
 char* playerName = new char[16];
 
 int deathCooldown = 0;
 int ableToKill = 0;
-int firstScreenTime = 120;
+int firstScreenTime = 5;
 
 bool in_game = false;
 bool entering_name = false;
@@ -37,6 +38,10 @@ Ghost* ghosts[4];
 Page* loadingScreen;
 Page* nameScreen;
 Page* pauseScreen;
+Page* mainMenu;
+
+Button* startGame;
+GameObject* startGameButtonBorder;
 
 GameObject* lives_list[3];
 
@@ -84,6 +89,11 @@ void Game::init(const char *title, int xPos, int yPos, int width, int height) {
     nameScreen = new Page("../assets/NameScreen.png");
     nameBorder = new GameObject("../assets/NameBox.png", 0, 0);
     pauseScreen = new Page("../assets/NameScreen.png");
+    mainMenu = new Page("../assets/MainMenu.png");
+
+    SDL_Rect r{100, 300, 400, 80};
+    startGame = new Button(r);
+    startGameButtonBorder = new GameObject("../assets/MainMenuButtonBox.png", 0, 0);
 
     map = new Map();
 }
@@ -96,29 +106,11 @@ void Game::handleEvents() {
         case SDL_QUIT:
             isRunning = false;
             break;
-        case SDL_KEYDOWN: {
-            switch (event.key.keysym.sym) {
-                case SDLK_d: if (in_game) player->SetDirection(1); break;
-                case SDLK_s: if (in_game) player->SetDirection(2); break;
-                case SDLK_a: if (in_game) player->SetDirection(3); break;
-                case SDLK_w: if (in_game) player->SetDirection(4); break;
-                case SDLK_ESCAPE: {
-                    if (in_game) {
-                        in_game = false;
-                        paused = true;
-                        }
-                    else {
-                        in_game = true;
-                        paused = false;
-                        }
-                    } break;
-                }
-            }
         default:
             break;
     }
-    if (entering_name) {
 
+    if (entering_name) {
         switch (event.type) {
             case SDL_KEYDOWN: {
                 switch (event.key.keysym.sym) {
@@ -148,6 +140,49 @@ void Game::handleEvents() {
             default: break;
         }
     }
+    if (in_main_menu) {
+        switch (event.type) {
+            case SDL_MOUSEBUTTONDOWN: {
+                if (event.button.button == SDL_BUTTON_LEFT) {
+                    if (startGame->checkIfPressed(event.button.x, event.button.y)) {
+                        in_main_menu = false;
+                        in_game = true;
+                    }
+                }
+            } break;
+        }
+    }
+
+    if (in_game) {
+            switch (event.type) {
+                case SDL_KEYDOWN: {
+                    switch (event.key.keysym.sym) {
+
+                        case SDLK_d:
+                            if (in_game) player->SetDirection(1);
+                            break;
+                        case SDLK_s:
+                            if (in_game) player->SetDirection(2);
+                            break;
+                        case SDLK_a:
+                            if (in_game) player->SetDirection(3);
+                            break;
+                        case SDLK_w:
+                            if (in_game) player->SetDirection(4);
+                            break;
+                        case SDLK_ESCAPE: {
+                            if (in_game) {
+                                in_game = false;
+                                paused = true;
+                            } else {
+                                in_game = true;
+                                paused = false;
+                            }
+                        } break;
+                    }
+                }
+            }
+        }
 }
 
 void Game::update() {
@@ -181,16 +216,10 @@ void Game::update() {
     Lives->Update(50, 180, 40, 925, "LIFES: ");
     playerNameBox->Update(60, nameBoxWidth, 420-nameBoxWidth/2, 465, playerName);
     nameBorder->Update(80, 660, 0, 0, 80, 670, 82, 451);
+    startGameButtonBorder->Update(80, 400, 0, 0, 80, 400, 220, 300);
 
-    if (firstScreenTime) {
-        firstScreenTime--;
-    }
-
+    if (firstScreenTime) firstScreenTime--;
     if (playerNameSize == 0) entering_name = true;
-    else { in_main_menu = true; }
-
-    in_main_menu = false; // FIX!!!
-
     if (!entering_name && !in_main_menu && !paused) in_game = true;
 
 }
@@ -220,6 +249,10 @@ void Game::render() {
     }
     else if (paused) {
         pauseScreen->ShowPage();
+    }
+    else if (in_main_menu) {
+        mainMenu->ShowPage();
+        startGameButtonBorder->Render();
     }
     SDL_RenderPresent(renderer);
 }
