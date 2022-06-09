@@ -20,6 +20,8 @@ bool in_game = false;
 bool entering_name = false;
 bool in_main_menu = false;
 bool paused = false;
+bool in_records = false;
+bool in_help_page = false;
 
 int playerNameSize = 0;
 int nameBoxWidth = 0;
@@ -39,9 +41,20 @@ Page* loadingScreen;
 Page* nameScreen;
 Page* pauseScreen;
 Page* mainMenu;
+Page* recordsScreen;
+Page* helpScreen;
 
-Button* startGame;
+Button* startGameButton;
+Button* changePlayerButton;
+Button* recordsButton;
+Button* helpButton;
+Button* exitMenuButton;
+
 GameObject* startGameButtonBorder;
+GameObject* changePlayerButtonBorder;
+GameObject* recordsButtonBorder;
+GameObject* helpButtonBorder;
+GameObject* exitMenuButtonBorder;
 
 GameObject* lives_list[3];
 
@@ -81,20 +94,38 @@ void Game::init(const char *title, int xPos, int yPos, int width, int height) {
     for (int i = 0; i < 4; ++i) ghosts[i] = new Ghost(i+1);
 
     playerNameBox = new TextObject("../fonts/ka1.ttf", 30, 0, 0);
+    nameBorder = new GameObject("../assets/NameBox.png", 0, 0);
 
     score = new TextObject("../fonts/ka1.ttf", 30, 0, 0);
     Lives = new TextObject("../fonts/ka1.ttf", 30, 0, 0);
 
     loadingScreen = new Page("../assets/LoadingScreen.png");
     nameScreen = new Page("../assets/NameScreen.png");
-    nameBorder = new GameObject("../assets/NameBox.png", 0, 0);
-    pauseScreen = new Page("../assets/NameScreen.png");
+    pauseScreen = new Page("../assets/PauseScreen.png");
     mainMenu = new Page("../assets/MainMenu.png");
+    recordsScreen = new Page("../assets/RecordsScreen.png");
+    helpScreen = new Page("../assets/HelpScreen.png");
 
-    SDL_Rect r{100, 300, 400, 80};
-    startGame = new Button(r);
+    SDL_Rect rStart{100, 300, 400, 80};
+    startGameButton = new Button(rStart);
+
+    SDL_Rect rChangePlayer{100, 400, 400, 80};
+    changePlayerButton = new Button(rChangePlayer);
+
+    SDL_Rect rRecords{100, 500, 400, 80};
+    recordsButton = new Button(rRecords);
+
+    SDL_Rect rHelp{100, 600, 400, 80};
+    helpButton = new Button(rHelp);
+
+    SDL_Rect rExit{100, 700, 400, 80};
+    exitMenuButton = new Button(rExit);
+
     startGameButtonBorder = new GameObject("../assets/MainMenuButtonBox.png", 0, 0);
-
+    changePlayerButtonBorder = new GameObject("../assets/MainMenuButtonBox.png", 0, 0);
+    recordsButtonBorder = new GameObject("../assets/MainMenuButtonBox.png", 0, 0);
+    helpButtonBorder = new GameObject("../assets/MainMenuButtonBox.png", 0, 0);
+    exitMenuButtonBorder = new GameObject("../assets/MainMenuButtonBox.png", 0, 0);
     map = new Map();
 }
 
@@ -140,20 +171,37 @@ void Game::handleEvents() {
             default: break;
         }
     }
-    if (in_main_menu) {
+
+    else if (in_main_menu) {
         switch (event.type) {
             case SDL_MOUSEBUTTONDOWN: {
                 if (event.button.button == SDL_BUTTON_LEFT) {
-                    if (startGame->checkIfPressed(event.button.x, event.button.y)) {
+                    if (startGameButton->checkIfPressed(event.button.x, event.button.y)) {
                         in_main_menu = false;
                         in_game = true;
+                    }
+                    if (changePlayerButton->checkIfPressed(event.button.x, event.button.y)) {
+                        in_main_menu = false;
+                        entering_name = true;
+                    }
+                    if (recordsButton->checkIfPressed(event.button.x, event.button.y)) {
+                        in_main_menu = false;
+                        in_records = true;
+                    }
+                    if (helpButton->checkIfPressed(event.button.x, event.button.y)) {
+                        in_main_menu = false;
+                        in_help_page = true;
+                    }
+                    if (exitMenuButton->checkIfPressed(event.button.x, event.button.y)) {
+                        in_main_menu = false;
+                        isRunning = false;
                     }
                 }
             } break;
         }
     }
 
-    if (in_game) {
+    else if (in_game) {
             switch (event.type) {
                 case SDL_KEYDOWN: {
                     switch (event.key.keysym.sym) {
@@ -171,18 +219,54 @@ void Game::handleEvents() {
                             if (in_game) player->SetDirection(4);
                             break;
                         case SDLK_ESCAPE: {
-                            if (in_game) {
-                                in_game = false;
-                                paused = true;
-                            } else {
-                                in_game = true;
-                                paused = false;
-                            }
+                            in_game = false;
+                            paused = true;
+                            std::cout << in_game << " " << paused << '\n';
                         } break;
                     }
-                }
+                } break;
             }
         }
+    
+    else if (in_records) {
+        switch (event.type) {
+            case SDL_KEYDOWN: {
+                switch (event.key.keysym.sym) {
+                    case SDLK_ESCAPE: {
+                        in_records = false;
+                        in_main_menu = true;
+                        paused = false;
+                    } break;
+                }
+            } break;
+        }
+    }
+    
+    else if (paused) {
+        switch (event.type) {
+            case SDL_KEYDOWN: {
+                switch (event.key.keysym.sym) {
+                    case SDLK_ESCAPE: {
+                            paused = false;
+                            in_game = true;
+                    }
+                }
+            } break;
+        }
+    }
+
+    else if (in_help_page) {
+        switch (event.type) {
+            case SDL_KEYDOWN: {
+                switch (event.key.keysym.sym) {
+                    case SDLK_ESCAPE: {
+                        in_help_page = false;
+                        in_main_menu = true;
+                    } break;
+                }
+            } break;
+        }
+    }
 }
 
 void Game::update() {
@@ -216,12 +300,15 @@ void Game::update() {
     Lives->Update(50, 180, 40, 925, "LIFES: ");
     playerNameBox->Update(60, nameBoxWidth, 420-nameBoxWidth/2, 465, playerName);
     nameBorder->Update(80, 660, 0, 0, 80, 670, 82, 451);
+
     startGameButtonBorder->Update(80, 400, 0, 0, 80, 400, 220, 300);
+    changePlayerButtonBorder->Update(80, 400, 0, 0, 80, 400, 220, 400);
+    recordsButtonBorder->Update(80, 400, 0, 0, 80, 400, 220, 500);
+    helpButtonBorder->Update(80, 400, 0, 0, 80, 400, 220, 600);
+    exitMenuButtonBorder->Update(80, 400, 0, 0, 80, 400, 220, 700);
 
     if (firstScreenTime) firstScreenTime--;
     if (playerNameSize == 0) entering_name = true;
-    if (!entering_name && !in_main_menu && !paused) in_game = true;
-
 }
 
 void Game::render() {
@@ -253,6 +340,16 @@ void Game::render() {
     else if (in_main_menu) {
         mainMenu->ShowPage();
         startGameButtonBorder->Render();
+        changePlayerButtonBorder->Render();
+        recordsButtonBorder->Render();
+        helpButtonBorder->Render();
+        exitMenuButtonBorder->Render();
+    }
+    else if (in_records) {
+        recordsScreen->ShowPage();
+    }
+    else if (in_help_page) {
+        helpScreen->ShowPage();
     }
     SDL_RenderPresent(renderer);
 }
