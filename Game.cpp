@@ -30,6 +30,7 @@ Map* map;
 GameObject* nameBorder;
 TextObject* playerNameBox;
 TextObject* score;
+TextObject* scoreIfLost;
 
 Player* player;
 Ghost* ghosts[4];
@@ -143,6 +144,8 @@ void Game::init(const char *title, int xPos, int yPos, int width, int height) {
 
     SDL_Rect rWExit{220, 500, 400, 80};
     exitWinButton = new Button(rWExit);
+
+    scoreIfLost = new TextObject("../fonts/ka1.ttf", 50, 0, 0);
 
     continueButtonBorder = new GameObject("../assets/MainMenuButtonBox.png", 0, 0);
     exitGameButtonBorder = new GameObject("../assets/MainMenuButtonBox.png", 0, 0);
@@ -378,6 +381,7 @@ void Game::update() {
         if (ableToKill) ableToKill--;
     }
     score->Update(50, 100, 700, 925, TextObject::score_toString(points));
+    scoreIfLost->Update(30, 60, 500, 365, TextObject::score_toString(points));
     playerNameBox->Update(60, nameBoxWidth, 420-nameBoxWidth/2, 465, playerName);
     nameBorder->Update(80, 660, 0, 0, 80, 670, 82, 451);
 
@@ -423,6 +427,7 @@ void Game::render() {
             loseScreen->ShowPage();
             replayWinButtonBorder->Render();
             exitWinButtonBorder->Render();
+            scoreIfLost->Render();
         }
     }
     else if (firstScreenTime) {
@@ -459,7 +464,7 @@ void Game::clean() {
 
 Game::Game() {
     points = 0;
-    lives = 3;
+    lives = 1;
     deathCooldown = 0;
     ableToKill = 0;
     firstScreenTime = 5;
