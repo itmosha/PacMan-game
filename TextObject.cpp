@@ -37,9 +37,8 @@ char* TextObject::score_toString(int scr) {
     char str_score[3] = {' ', ' ', ' '};
     int i = 2;
 
-    char* string_text = new char[10];
-    string_text[0] = 'S'; string_text[1] = 'C'; string_text[2] = 'O'; string_text[3] = 'R'; string_text[4] = 'E';
-    string_text[5] = ':'; string_text[6] = ' ';
+    char* string_text = new char[4];
+    string_text[3] = '\0';
 
     if (scr == 0) {
         str_score[2] = '0';
@@ -53,7 +52,7 @@ char* TextObject::score_toString(int scr) {
             scr /= 10;
         }
     }
-    string_text[7] = str_score[0]; string_text[8] = str_score[1]; string_text[9] = str_score[2];
+    string_text[0] = str_score[0]; string_text[1] = str_score[1]; string_text[2] = str_score[2];
 
     return string_text;
 }

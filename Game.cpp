@@ -12,7 +12,6 @@
 
 char* playerName = new char[16];
 
-
 bool in_game = false;
 bool entering_name = false;
 bool in_main_menu = false;
@@ -20,6 +19,7 @@ bool paused = false;
 bool in_records = false;
 bool in_help_page = false;
 bool win = false;
+bool lost = false;
 
 int playerNameSize = 0;
 int nameBoxWidth = 0;
@@ -30,7 +30,6 @@ Map* map;
 GameObject* nameBorder;
 TextObject* playerNameBox;
 TextObject* score;
-TextObject* Lives;
 
 Player* player;
 Ghost* ghosts[4];
@@ -42,6 +41,7 @@ Page* mainMenu;
 Page* recordsScreen;
 Page* helpScreen;
 Page* winScreen;
+Page* loseScreen;
 
 Button* startGameButton;
 Button* changePlayerButton;
@@ -104,7 +104,6 @@ void Game::init(const char *title, int xPos, int yPos, int width, int height) {
     nameBorder = new GameObject("../assets/NameBox.png", 0, 0);
 
     score = new TextObject("../fonts/ka1.ttf", 30, 0, 0);
-    Lives = new TextObject("../fonts/ka1.ttf", 30, 0, 0);
 
     loadingScreen = new Page("../assets/LoadingScreen.png");
     nameScreen = new Page("../assets/NameScreen.png");
@@ -112,6 +111,7 @@ void Game::init(const char *title, int xPos, int yPos, int width, int height) {
     SDL_Rect sPause{0, 0, 640, 390}, dPause{100, 300, 640, 390};
     pauseScreen = new Page(sPause, dPause, "../assets/PauseScreen.png");
     winScreen = new Page(sPause, dPause, "../assets/WinScreen.png");
+    loseScreen = new Page(sPause, dPause, "../assets/LoseScreen.png");
 
     mainMenu = new Page("../assets/MainMenu.png");
     recordsScreen = new Page("../assets/RecordsScreen.png");
@@ -312,7 +312,7 @@ void Game::handleEvents() {
         }
     }
 
-    else if (win) {
+    else if (win || lost) {
         switch (event.type) {
             case SDL_MOUSEBUTTONDOWN: {
                 if (event.button.button == SDL_BUTTON_LEFT) {
@@ -323,6 +323,7 @@ void Game::handleEvents() {
 
                         in_game = true;
                         win = false;
+                        lost = false;
                     }
                     if (exitWinButton->checkIfPressed(event.button.x, event.button.y)) {
                         ResetGame();
@@ -331,6 +332,7 @@ void Game::handleEvents() {
 
                         in_main_menu = true;
                         win = false;
+                        lost = false;
                     }
                 }
             } break;
@@ -339,6 +341,11 @@ void Game::handleEvents() {
 
     if (points == 244) {
         win = true;
+        in_game = false;
+    }
+
+    if (lives == 0) {
+        lost = true;
         in_game = false;
     }
 }
@@ -370,8 +377,7 @@ void Game::update() {
         if (deathCooldown) deathCooldown--;
         if (ableToKill) ableToKill--;
     }
-    score->Update(50, 240, 540, 925, TextObject::score_toString(points));
-    Lives->Update(50, 180, 40, 925, "LIFES: ");
+    score->Update(50, 100, 700, 925, TextObject::score_toString(points));
     playerNameBox->Update(60, nameBoxWidth, 420-nameBoxWidth/2, 465, playerName);
     nameBorder->Update(80, 660, 0, 0, 80, 670, 82, 451);
 
@@ -394,7 +400,7 @@ void Game::update() {
 void Game::render() {
     SDL_RenderClear(renderer);
 
-    if (in_game || paused || win) {
+    if (in_game || paused || win || lost) {
         map->drawMap();
 
         player->RenderPlayer();
@@ -402,7 +408,6 @@ void Game::render() {
         for (auto &ghost: ghosts) ghost->RenderGhost();
 
         score->Render();
-        Lives->Render();
 
         for (int i = 0; i < lives; ++i) lives_list[i]->Render();
 
@@ -412,6 +417,10 @@ void Game::render() {
             exitGameButtonBorder->Render();
         } else if (win) {
             winScreen->ShowPage();
+            replayWinButtonBorder->Render();
+            exitWinButtonBorder->Render();
+        } else if (lost) {
+            loseScreen->ShowPage();
             replayWinButtonBorder->Render();
             exitWinButtonBorder->Render();
         }
