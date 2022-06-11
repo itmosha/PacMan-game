@@ -9,6 +9,7 @@
 #include "Player.h"
 #include "Page.h"
 #include "Button.h"
+#include "Result.h"
 
 char* playerName = new char[16];
 
@@ -23,6 +24,8 @@ bool lost = false;
 
 int playerNameSize = 0;
 int nameBoxWidth = 0;
+
+Result* Res;
 
 SDL_Renderer* Game::renderer = nullptr;
 Map* map;
@@ -56,6 +59,10 @@ Button* exitGameButton;
 Button* replayWinButton;
 Button* exitWinButton;
 
+Button* ClearFileButton;
+Button* PrintFileButton;
+Button* ExitResultsButton;
+
 GameObject* startGameButtonBorder;
 GameObject* changePlayerButtonBorder;
 GameObject* recordsButtonBorder;
@@ -68,8 +75,12 @@ GameObject* exitGameButtonBorder;
 GameObject* replayWinButtonBorder;
 GameObject* exitWinButtonBorder;
 
-GameObject* lives_list[3];
+GameObject* ClearFileButtonBorder;
+GameObject* PrintFileButtonBorder;
+GameObject* ExitResultsButtonBorder;
 
+GameObject* lives_list[3];
+TextObject* scoreBoard[3][10];
 
 void Game::init(const char *title, int xPos, int yPos, int width, int height) {
     if (SDL_Init(SDL_INIT_EVERYTHING) == 0){
@@ -95,6 +106,7 @@ void Game::init(const char *title, int xPos, int yPos, int width, int height) {
     SDL_SetWindowIcon(window, tmpSurface);
     SDL_FreeSurface(tmpSurface);
 
+    Res = new Result();
 
     for (auto & i : lives_list) i = new GameObject("../assets/CharacterLife.png", 0, 0);
 
@@ -145,6 +157,15 @@ void Game::init(const char *title, int xPos, int yPos, int width, int height) {
     SDL_Rect rWExit{220, 500, 400, 80};
     exitWinButton = new Button(rWExit);
 
+    SDL_Rect rRClear{220, 700, 400, 80};
+    ClearFileButton = new Button(rRClear);
+
+    SDL_Rect rRPrint{220, 800, 400, 80};
+    PrintFileButton = new Button(rRPrint);
+
+    SDL_Rect rRExit{220, 900, 400, 80};
+    ExitResultsButton = new Button(rRExit);
+
     scoreIfLost = new TextObject("../fonts/ka1.ttf", 50, 0, 0);
 
     continueButtonBorder = new GameObject("../assets/MainMenuButtonBox.png", 0, 0);
@@ -158,6 +179,16 @@ void Game::init(const char *title, int xPos, int yPos, int width, int height) {
     recordsButtonBorder = new GameObject("../assets/MainMenuButtonBox.png", 0, 0);
     helpButtonBorder = new GameObject("../assets/MainMenuButtonBox.png", 0, 0);
     exitMenuButtonBorder = new GameObject("../assets/MainMenuButtonBox.png", 0, 0);
+
+    ClearFileButtonBorder = new GameObject("../assets/MainMenuButtonBox.png", 0, 0);
+    PrintFileButtonBorder = new GameObject("../assets/MainMenuButtonBox.png", 0, 0);
+    ExitResultsButtonBorder = new GameObject("../assets/MainMenuButtonBox.png", 0, 0);
+
+    for (auto & i : scoreBoard) {
+        for (auto & j : i) {
+            j = new TextObject("../fonts/ka1.ttf", 30, 0, 0);
+        }
+    }
     map = new Map();
 }
 
@@ -167,6 +198,7 @@ void Game::handleEvents() {
 
     switch (event.type) {
         case SDL_QUIT:
+            Res->SaveToFile();
             isRunning = false;
             break;
         default:
@@ -225,6 +257,8 @@ void Game::handleEvents() {
                         in_help_page = true;
                     }
                     if (exitMenuButton->checkIfPressed(event.button.x, event.button.y)) {
+                        Res->SaveToFile();
+
                         in_main_menu = false;
                         isRunning = false;
                     }
@@ -268,6 +302,20 @@ void Game::handleEvents() {
                         in_main_menu = true;
                         paused = false;
                     } break;
+                }
+            } break;
+            case SDL_MOUSEBUTTONDOWN: {
+                if (event.button.button == SDL_BUTTON_LEFT) {
+                    if(ClearFileButton->checkIfPressed(event.button.x, event.button.y)) {
+                        Res->ClearList();
+                    }
+                    if (PrintFileButton->checkIfPressed(event.button.x, event.button.y)) {
+                        Res->PrintList();
+                    }
+                    if (ExitResultsButton->checkIfPressed(event.button.x, event.button.y)) {
+                        in_records = false;
+                        in_main_menu = true;
+                    }
                 }
             } break;
         }
@@ -345,11 +393,20 @@ void Game::handleEvents() {
     if (points == 244) {
         win = true;
         in_game = false;
+        if (!written) {
+            Res->AddResult(playerName, points);
+            written = true;
+        }
     }
 
     if (lives == 0) {
         lost = true;
         in_game = false;
+
+        if (!written) {
+            Res->AddResult(playerName, points);
+            written = true;
+        }
     }
 }
 
@@ -396,6 +453,14 @@ void Game::update() {
 
     replayWinButtonBorder->Update(80, 400, 0, 0, 80, 400, 220, 420);
     exitWinButtonBorder->Update(80, 400, 0, 0, 80, 400, 220, 520);
+
+    ClearFileButtonBorder->Update(80, 400, 0, 0, 80, 400, 220, 700);
+    PrintFileButtonBorder->Update(80, 400, 0, 0, 80, 400, 220, 800);
+    ExitResultsButtonBorder->Update(80, 400, 0, 0, 80, 400, 220, 900);
+
+    for (int i = 0; i < Res->records.size(); ++i) scoreBoard[0][i]->Update(30, 60, 20, 150+i*50, TextObject::score_toString(i+1));
+    for (int i = 0; i < Res->records.size(); ++i) scoreBoard[1][i]->Update(30, 90, 150, 150+i*50, TextObject::score_toString(Res->records[i].pts));
+    for (int i = 0; i < Res->records.size(); ++i) scoreBoard[2][i]->Update(30, strlen(Res->records[i].name)*30, 300, 150 + i*50, Res->records[i].name);
 
     if (firstScreenTime) firstScreenTime--;
     if (playerNameSize == 0) entering_name = true;
@@ -448,6 +513,14 @@ void Game::render() {
     }
     else if (in_records) {
         recordsScreen->ShowPage();
+        for (int i = 0; i < Res->records.size(); ++i) {
+            scoreBoard[0][i]->Render();
+            scoreBoard[1][i]->Render();
+            scoreBoard[2][i]->Render();
+        }
+        ClearFileButtonBorder->Render();
+        PrintFileButtonBorder->Render();
+        ExitResultsButtonBorder->Render();
     }
     else if (in_help_page) {
         helpScreen->ShowPage();
@@ -463,6 +536,7 @@ void Game::clean() {
 }
 
 Game::Game() {
+    written = false;
     points = 0;
     lives = 1;
     deathCooldown = 0;
@@ -471,6 +545,7 @@ Game::Game() {
 }
 
 void Game::ResetGame() {
+    written = false;
     points = 0;
     lives = 3;
     deathCooldown = 0;

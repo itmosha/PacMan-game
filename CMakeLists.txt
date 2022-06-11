@@ -12,7 +12,7 @@ file(GLOB cpphfiles
         "*.cpp"
         )
 
-add_executable(NewProject ${cpphfiles} Game.cpp Game.h TextureCreator.cpp TextureCreator.h GameObject.cpp GameObject.h Map.cpp Map.h CollisionChecker.cpp CollisionChecker.h Food.cpp Food.h TextObject.cpp TextObject.h Ghost.cpp Ghost.h Player.cpp Player.h Page.cpp Page.h Button.cpp Button.h)
+add_executable(NewProject ${cpphfiles} Game.cpp Game.h TextureCreator.cpp TextureCreator.h GameObject.cpp GameObject.h Map.cpp Map.h CollisionChecker.cpp CollisionChecker.h Food.cpp Food.h TextObject.cpp TextObject.h Ghost.cpp Ghost.h Player.cpp Player.h Page.cpp Page.h Button.cpp Button.h Result.cpp Result.h)
 
 target_link_libraries(${PROJECT_NAME} SDL2main SDL2 SDL2_image SDL2_ttf SDL2_mixer )
 target_link_libraries(NewProject ${SDL2_LIBRARIES})

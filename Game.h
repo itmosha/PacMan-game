@@ -14,6 +14,7 @@ private:
     int deathCooldown;
     int ableToKill;
     int firstScreenTime;
+    bool written;
 public:
     Game();
     ~Game();
