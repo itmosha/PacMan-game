@@ -4,7 +4,7 @@
 class TextObject {
 public:
     TextObject(const char* font, int size);
-    ~TextObject();
+    ~TextObject() = default;
 
     void Update(int H, int W, int destX, int destY, const char* text);
     void Render();

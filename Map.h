@@ -4,7 +4,7 @@
 class Map {
 public:
     Map();
-    ~Map();
+    ~Map() = default;
 
     bool get_map_element(int row, int column);
     void loadMap();

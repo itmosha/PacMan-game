@@ -31,7 +31,7 @@ private:
 
 public:
     Game();
-    ~Game();
+    ~Game() = default;
 
     void init(const char* title, int xPos, int yPos, int width, int height);
 

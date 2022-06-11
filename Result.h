@@ -13,7 +13,7 @@ struct res {
 class Result {
 public:
     Result();
-    ~Result();
+    ~Result() = default;
 
     void AddResult(const char playerName[16], int points);
     void PrintList();

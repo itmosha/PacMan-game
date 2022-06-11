@@ -13,7 +13,7 @@ private:
 
 public:
     Player();
-    ~Player();
+    ~Player() = default;
 
     void UpdatePlayer();
     int GhostCollisions(Ghost* ghosts[4], int ableToKill);

@@ -8,6 +8,6 @@ public:
     Button(SDL_Rect bRect);
     bool checkIfPressed(int mouseX, int mouseY);
 
-    ~Button();
+    ~Button() = default;
 };
 

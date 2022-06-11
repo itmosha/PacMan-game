@@ -419,6 +419,31 @@ void Game::render() {
 void Game::clean() {
     SDL_DestroyWindow(window);
     SDL_DestroyRenderer(renderer);
+
+    delete player;
+    delete map;
+    delete Res;
+
+    for (auto & page : pages) delete page;
+    for (auto & ghost : ghosts) delete ghost;
+    for (auto & i : lives_list) delete i;
+
+    for (auto & i : scoreBoard) {
+        for (auto & j : i) delete j;
+    }
+
+    for (auto & mainMenuButtonBorder : mainMenuButtonBorders) delete mainMenuButtonBorder;
+    for (auto & mainMenuButton : mainMenuButtons) delete mainMenuButton;
+
+    for (auto & pauseButtonBorder : pauseButtonBorders) delete pauseButtonBorder;
+    for (auto & pauseButton : pauseButtons) delete pauseButton;
+
+    for (auto & replayExitButtonBorder : replayExitButtonBorders) delete replayExitButtonBorder;
+    for (auto & replayExitButton : replayExitButtons) delete replayExitButton;
+
+    for (auto & recordsButtonBorder : recordsButtonBorders) delete recordsButtonBorder;
+    for (auto & recordsButton : recordsButtons) delete recordsButton;
+
     SDL_Quit();
     std::cout << "Cleaning: OK" << '\n';
 }
@@ -455,4 +480,3 @@ void Game::ResetGame() {
 
 void Game::TakeLife() { lives--; }
 void Game::AddPoint() { points++; }
-Game::~Game() { }
