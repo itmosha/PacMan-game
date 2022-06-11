@@ -11,41 +11,20 @@
 #include "Button.h"
 #include "Result.h"
 
-char* playerName = new char[16];
-
-bool in_game = false;
-bool entering_name = false;
-bool in_main_menu = false;
-bool paused = false;
-bool in_records = false;
-bool in_help_page = false;
-bool win = false;
-bool lost = false;
-
-int playerNameSize = 0;
-int nameBoxWidth = 0;
-
-Result* Res;
-
+const SDL_Rect SmallPageSourceRect{0,0,640,390}, SmallPageDestinationRect{100,300,640,390};
 SDL_Renderer* Game::renderer = nullptr;
+
+char* playerName = new char[16];
+Page* pages[8];
+Ghost* ghosts[4];
+Player* player;
 Map* map;
+Result* Res;
 
 GameObject* nameBorder;
 TextObject* playerNameBox;
 TextObject* score;
 TextObject* scoreIfLost;
-
-Player* player;
-Ghost* ghosts[4];
-
-Page* loadingScreen;
-Page* nameScreen;
-Page* pauseScreen;
-Page* mainMenu;
-Page* recordsScreen;
-Page* helpScreen;
-Page* winScreen;
-Page* loseScreen;
 
 Button* startGameButton;
 Button* changePlayerButton;
@@ -96,11 +75,11 @@ void Game::init(const char *title, int xPos, int yPos, int width, int height) {
         }
         isRunning = true;
 
-    } else {
-        isRunning = false;
-    }
+    } else isRunning = false;
 
-    TTF_Init();
+    if (TTF_Init() == 0) {
+        std::cout << "TTF: OK" << '\n';
+    } else isRunning = false;
 
     SDL_Surface *tmpSurface = IMG_Load("../assets/Icon.png");
     SDL_SetWindowIcon(window, tmpSurface);
@@ -118,17 +97,14 @@ void Game::init(const char *title, int xPos, int yPos, int width, int height) {
 
     score = new TextObject("../fonts/ka1.ttf", 30, 0, 0);
 
-    loadingScreen = new Page("../assets/LoadingScreen.png");
-    nameScreen = new Page("../assets/NameScreen.png");
-
-    SDL_Rect sPause{0, 0, 640, 390}, dPause{100, 300, 640, 390};
-    pauseScreen = new Page(sPause, dPause, "../assets/PauseScreen.png");
-    winScreen = new Page(sPause, dPause, "../assets/WinScreen.png");
-    loseScreen = new Page(sPause, dPause, "../assets/LoseScreen.png");
-
-    mainMenu = new Page("../assets/MainMenu.png");
-    recordsScreen = new Page("../assets/RecordsScreen.png");
-    helpScreen = new Page("../assets/HelpScreen.png");
+    pages[0] = new Page("../assets/LoadingScreen.png");
+    pages[1] = new Page("../assets/NameScreen.png");
+    pages[2] = new Page(SmallPageSourceRect, SmallPageDestinationRect, "../assets/PauseScreen.png");
+    pages[3] = new Page("../assets/MainMenuScreen.png");
+    pages[4] = new Page("../assets/RecordsScreen.png");
+    pages[5] = new Page("../assets/HelpScreen.png");
+    pages[6] = new Page(SmallPageSourceRect, SmallPageDestinationRect, "../assets/WinScreen.png");
+    pages[7] = new Page(SmallPageSourceRect, SmallPageDestinationRect, "../assets/LoseScreen.png");
 
     SDL_Rect rStart{100, 300, 400, 80};
     startGameButton = new Button(rStart);
@@ -481,30 +457,30 @@ void Game::render() {
         for (int i = 0; i < lives; ++i) lives_list[i]->Render();
 
         if (paused) {
-            pauseScreen->ShowPage();
+            pages[2]->ShowPage();
             continueButtonBorder->Render();
             exitGameButtonBorder->Render();
         } else if (win) {
-            winScreen->ShowPage();
+            pages[6]->ShowPage();
             replayWinButtonBorder->Render();
             exitWinButtonBorder->Render();
         } else if (lost) {
-            loseScreen->ShowPage();
+            pages[7]->ShowPage();
             replayWinButtonBorder->Render();
             exitWinButtonBorder->Render();
             scoreIfLost->Render();
         }
     }
     else if (firstScreenTime) {
-        loadingScreen->ShowPage();
+        pages[0]->ShowPage();
     }
     else if (entering_name) {
-        nameScreen->ShowPage();
+        pages[1]->ShowPage();
         playerNameBox->Render();
         nameBorder->Render();
     }
     else if (in_main_menu) {
-        mainMenu->ShowPage();
+        pages[3]->ShowPage();
         startGameButtonBorder->Render();
         changePlayerButtonBorder->Render();
         recordsButtonBorder->Render();
@@ -512,18 +488,16 @@ void Game::render() {
         exitMenuButtonBorder->Render();
     }
     else if (in_records) {
-        recordsScreen->ShowPage();
-        for (int i = 0; i < Res->records.size(); ++i) {
-            scoreBoard[0][i]->Render();
-            scoreBoard[1][i]->Render();
-            scoreBoard[2][i]->Render();
+        pages[4]->ShowPage();
+        for (auto & i : scoreBoard) {
+            for (auto & j : i) j->Render();
         }
         ClearFileButtonBorder->Render();
         PrintFileButtonBorder->Render();
         ExitResultsButtonBorder->Render();
     }
     else if (in_help_page) {
-        helpScreen->ShowPage();
+        pages[5]->ShowPage();
     }
     SDL_RenderPresent(renderer);
 }
@@ -536,12 +510,25 @@ void Game::clean() {
 }
 
 Game::Game() {
+    in_game = false;
+    entering_name = false;
+    in_main_menu = false;
+    paused = false;
+    in_records = false;
+    in_help_page = false;
+    win = false;
+    lost = false;
     written = false;
+
     points = 0;
-    lives = 1;
+    lives = 3;
     deathCooldown = 0;
     ableToKill = 0;
-    firstScreenTime = 5;
+    firstScreenTime = 240;
+    playerNameSize = 0;
+    nameBoxWidth = 0;
+
+    playerName = new char[16];
 }
 
 void Game::ResetGame() {

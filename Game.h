@@ -8,13 +8,27 @@
 class Game {
 private:
     bool isRunning;
-    SDL_Window *window;
+
+    bool in_game;
+    bool entering_name;
+    bool in_main_menu;
+    bool paused;
+    bool in_records;
+    bool in_help_page;
+    bool win;
+    bool lost;
+    bool written;
+
     int points;
     int lives;
     int deathCooldown;
     int ableToKill;
     int firstScreenTime;
-    bool written;
+    int playerNameSize;
+    int nameBoxWidth;
+
+    SDL_Window *window;
+
 public:
     Game();
     ~Game();
@@ -29,8 +43,6 @@ public:
     void clean();
 
     void ResetGame();
-
-    void ShowFirstScreen();
 
     bool running() const { return isRunning; };
 
