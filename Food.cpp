@@ -13,7 +13,7 @@ Food::Food() {
     loadFood();
 
     for (int i = 0; i < FOOD_COUNT; ++i) {
-        food_array[i] = new GameObject("../assets/Food.png", food_coords[i].x + 5, food_coords[i].y + 5);
+        food_array[i] = new GameObject("../assets/Food.png");
     }
 }
 

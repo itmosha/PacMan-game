@@ -3,7 +3,7 @@
 
 class TextObject {
 public:
-    TextObject(const char* font, int size, int x, int y);
+    TextObject(const char* font, int size);
     ~TextObject();
 
     void Update(int H, int W, int destX, int destY, const char* text);

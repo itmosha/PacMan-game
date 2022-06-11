@@ -6,7 +6,7 @@ GameObject* map_texture;
 
 Map::Map() {
     loadMap();
-    map_texture = new GameObject("../assets/Map.png", 0, 0);
+    map_texture = new GameObject("../assets/Map.png");
 }
 
 bool Map::get_map_element(int row, int column) {

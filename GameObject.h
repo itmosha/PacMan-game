@@ -6,7 +6,7 @@ class GameObject {
 public:
 
     GameObject() = default;
-    GameObject(const char* texturesheet, int x, int y);
+    GameObject(const char* texturesheet);
     ~GameObject() = default;
 
     int GetX() { return xPos; }

@@ -2,16 +2,12 @@
 #include "TextureCreator.h"
 #include "Game.h"
 
-TextObject::TextObject(const char *font_path, int size, int x, int y) {
+TextObject::TextObject(const char *font_path, int size) {
     font = TTF_OpenFont(font_path, size);
     color = {255, 255, 255};
 
-    if (font == nullptr) {
-        std::cout << SDL_GetError() << '\n';
-    }
-
-    xPos = x;
-    yPos = y;
+    xPos = 0;
+    yPos = 0;
 }
 
 void TextObject::Update(int H, int W, int destX, int destY, const char* text) {
@@ -29,7 +25,7 @@ void TextObject::Update(int H, int W, int destX, int destY, const char* text) {
 }
 
 void TextObject::Render() {
-    SDL_RenderCopy(Game::renderer, textTexture, NULL, &destRect);
+    SDL_RenderCopy(Game::renderer, textTexture, nullptr, &destRect);
 }
 
 char* TextObject::score_toString(int scr) {

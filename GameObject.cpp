@@ -1,11 +1,11 @@
 #include "GameObject.h"
 #include "TextureCreator.h"
 
-GameObject::GameObject(const char *texturesheet, int x, int y) {
+GameObject::GameObject(const char *texturesheet) {
     objectTexture = TextureCreator::loadTexture(texturesheet);
 
-    xPos = x;
-    yPos = y;
+    xPos = 0;
+    yPos = 0;
 }
 
 void GameObject::Update(int sourceH, int sourceW, int sourceX, int sourceY, int destH, int destW, int destX, int destY) {
