@@ -10,5 +10,4 @@ public:
     bool LeftWallCollision(int x, int y);
     bool DownWallCollision(int x, int y);
     bool UpWallCollision(int x, int y);
-
 };

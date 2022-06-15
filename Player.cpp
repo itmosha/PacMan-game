@@ -76,37 +76,37 @@ int Player::FoodCollisions() {
     int playerCellX = (xPos + 20) / 30, playerCellY = (yPos + 20)/30;
     switch (direction) {
         case 1: {
-            int any_food = food->get_food_by_coords(playerCellX + 1, playerCellY);
+            int any_food = food->GetFoodByCoords(playerCellX + 1, playerCellY);
             if (any_food) {
                 if ((xPos + 20) % 30 >= 25) {
-                    food->eat_food(playerCellX + 1, playerCellY);
+                    food->EatFood(playerCellX + 1, playerCellY);
                     return any_food;
                 }
             }
         } break;
         case 2: {
-            int any_food = food->get_food_by_coords(playerCellX, playerCellY + 1);
+            int any_food = food->GetFoodByCoords(playerCellX, playerCellY + 1);
             if (any_food) {
                 if ((yPos + 20) % 30 >= 25) {
-                    food->eat_food(playerCellX, playerCellY + 1);
+                    food->EatFood(playerCellX, playerCellY + 1);
                     return any_food;
                 }
             }
         }
         case 3: {
-            int any_food = food->get_food_by_coords(playerCellX - 1, playerCellY);
+            int any_food = food->GetFoodByCoords(playerCellX - 1, playerCellY);
             if (any_food) {
                 if ((xPos - 20) % 30 >= 25) {
-                    food->eat_food(playerCellX - 1, playerCellY);
+                    food->EatFood(playerCellX - 1, playerCellY);
                     return any_food;
                 }
             }
         }
         case 4: {
-            int any_food = food->get_food_by_coords(playerCellX, playerCellY - 1);
+            int any_food = food->GetFoodByCoords(playerCellX, playerCellY - 1);
             if (any_food) {
                 if ((yPos - 20) % 30 >= 25) {
-                    food->eat_food(playerCellX, playerCellY - 1);
+                    food->EatFood(playerCellX, playerCellY - 1);
                     return any_food;
                 }
             }
@@ -139,5 +139,5 @@ int Player::GhostCollisions(Ghost *ghosts[4], int AbleToKill) {
 
 void Player::RenderPlayer() {
     SDL_RenderCopy(Game::renderer, objectTexture, &sourceRectangle, &destinationRectangle);
-    food->drawFood();
+    food->DrawFood();
 }

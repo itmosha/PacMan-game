@@ -36,10 +36,10 @@ void Result::PrintList() {
         remove("printfile.txt");
         fputs("Место | Очки | Имя\n", f);
         for (int i = 0; i < records.size(); ++i) {
-            fputs(TextObject::score_toString(i+1), f);
+            fputs(TextObject::ScoreToString(i+1), f);
             fputs("   |  ", f);
             std::cout << "1" << '\n';
-            fputs(TextObject::score_toString(records[i].pts), f);
+            fputs(TextObject::ScoreToString(records[i].pts), f);
             fputs(" |  ", f);
             std::cout << "2" << '\n';
             fputs(records[i].name, f);

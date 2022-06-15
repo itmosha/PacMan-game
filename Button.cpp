@@ -7,7 +7,7 @@ Button::Button(SDL_Rect bRect) {
     buttonRect.w = bRect.w;
 }
 
-bool Button::checkIfPressed(int mouseX, int mouseY) {
+bool Button::CheckIfPressed(int mouseX, int mouseY) {
     if (mouseX >= buttonRect.x && mouseX <= (buttonRect.x + buttonRect.w) &&
         mouseY >= buttonRect.y && mouseY <= (buttonRect.y + buttonRect.h)) return true;
     return false;

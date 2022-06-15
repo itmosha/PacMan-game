@@ -6,7 +6,7 @@ private:
     SDL_Rect buttonRect;
 public:
     Button(SDL_Rect bRect);
-    bool checkIfPressed(int mouseX, int mouseY);
+    bool CheckIfPressed(int mouseX, int mouseY);
 
     ~Button() = default;
 };

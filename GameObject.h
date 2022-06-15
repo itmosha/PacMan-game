@@ -9,8 +9,8 @@ public:
     GameObject(const char* texturesheet);
     ~GameObject() = default;
 
-    int GetX() { return xPos; }
-    int GetY() { return yPos; }
+    int GetX() const { return xPos; }
+    int GetY() const { return yPos; }
     void Update(int sourceH, int sourceW, int sourceX, int sourceY, int destH, int destW, int destX, int destY);
 
     void Render();

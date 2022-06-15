@@ -10,14 +10,14 @@ Food::Food() {
     for (int i = 0; i < FOOD_COUNT; ++i) is_bonus[i] = false;
     for (int i = 0; i < 3; ++i) is_bonus[bonuses[i]] = true;
 
-    loadFood();
+    LoadFood();
 
     for (int i = 0; i < FOOD_COUNT; ++i) {
         food_array[i] = new GameObject("../assets/Food.png");
     }
 }
 
-void Food::loadFood() {
+void Food::LoadFood() {
     std::ifstream in;
     in.open("../other/FoodCoordinates.txt");
 
@@ -34,7 +34,7 @@ void Food::loadFood() {
     in.close();
 }
 
-void Food::drawFood() {
+void Food::DrawFood() {
     for (int i = 0; i < FOOD_COUNT; ++i) {
         if (!is_eaten[i]) {
 
@@ -54,7 +54,7 @@ void Food::drawFood() {
 // 1 if there is regular food
 // 2 if there is a bonus
 
-int Food::get_food_by_coords(int x, int y) {
+int Food::GetFoodByCoords(int x, int y) {
     bool found = false;
     for (int i = 0; i < FOOD_COUNT; ++i) {
         if (food_coords[i].x == x && food_coords[i].y == y) {
@@ -68,7 +68,7 @@ int Food::get_food_by_coords(int x, int y) {
     return 0;
 }
 
-void Food::eat_food(int x, int y) {
+void Food::EatFood(int x, int y) {
     for (int i = 0; i < FOOD_COUNT; ++i) {
         if (food_coords[i].x == x && food_coords[i].y == y) {
             is_eaten[i] = true;

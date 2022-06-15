@@ -13,17 +13,17 @@ int main(int argc, char *argv[]) {
     game = new Game();
     game->init("Pac-Man", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 840, 990);
 
-    while (game->running()) {
+    while (game->Running()) {
         frameStart = SDL_GetTicks();
 
-        game->handleEvents();
-        game->update();
-        game->render();
+        game->HandleEvents();
+        game->Update();
+        game->Render();
 
         frameTime = SDL_GetTicks() - frameStart;
         if (frameDelay > frameTime) SDL_Delay(frameDelay - frameTime);
     }
-    game->clean();
+    game->Clean();
 
     return 0;
 }

@@ -16,10 +16,10 @@ private:
 public:
     Food();
 
-    int get_food_by_coords(int x, int y);
-    void eat_food(int x, int y);
-    void loadFood();
-    void drawFood();
+    int GetFoodByCoords(int x, int y);
+    void EatFood(int x, int y);
+    void LoadFood();
+    void DrawFood();
 
     ~Food() = default;
 };

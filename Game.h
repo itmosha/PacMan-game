@@ -37,14 +37,14 @@ public:
 
     void TakeLife();
     void AddPoint();
-    void handleEvents();
-    void update();
-    void render();
-    void clean();
+    void HandleEvents();
+    void Update();
+    void Render();
+    void Clean();
 
     void ResetGame();
 
-    bool running() const { return isRunning; };
+    bool Running() const { return isRunning; };
 
     static SDL_Renderer* renderer;
     static int collisionChecker;

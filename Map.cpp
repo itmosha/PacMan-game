@@ -5,15 +5,15 @@
 GameObject* map_texture;
 
 Map::Map() {
-    loadMap();
+    LoadMap();
     map_texture = new GameObject("../assets/Map.png");
 }
 
-bool Map::get_map_element(int row, int column) {
+bool Map::GetMapElement(int row, int column) {
     return map[row][column];
 }
 
-void Map::loadMap() {
+void Map::LoadMap() {
     std::ifstream in;
     in.open("other/MapStructure.txt");
 
@@ -25,7 +25,7 @@ void Map::loadMap() {
     in.close();
 }
 
-void Map::drawMap() {
+void Map::DrawMap() {
     map_texture->Update(990, 840, 0, 0, 990, 840, 0, 0);
     map_texture->Render();
 }

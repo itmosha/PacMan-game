@@ -6,9 +6,9 @@ public:
     Map();
     ~Map() = default;
 
-    bool get_map_element(int row, int column);
-    void loadMap();
-    void drawMap();
+    bool GetMapElement(int row, int column);
+    void LoadMap();
+    void DrawMap();
 
 private:
     SDL_Rect source, destination;

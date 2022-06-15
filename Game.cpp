@@ -114,7 +114,7 @@ void Game::init(const char *title, int xPos, int yPos, int width, int height) {
     }
 }
 
-void Game::handleEvents() {
+void Game::HandleEvents() {
     SDL_Event event;
     SDL_PollEvent(&event);
 
@@ -144,7 +144,7 @@ void Game::handleEvents() {
                     } break;
                     default: {
                         if (playerNameSize < 16) {
-                            char c = TextObject::event_to_char(event, playerNameSize);
+                            char c = TextObject::EventToChar(event);
                             if (c != '!') {
                                 playerName[playerNameSize] = c;
                                 playerNameSize++;
@@ -162,23 +162,23 @@ void Game::handleEvents() {
         switch (event.type) {
             case SDL_MOUSEBUTTONDOWN: {
                 if (event.button.button == SDL_BUTTON_LEFT) {
-                    if (mainMenuButtons[0]->checkIfPressed(event.button.x, event.button.y)) {
+                    if (mainMenuButtons[0]->CheckIfPressed(event.button.x, event.button.y)) {
                         in_main_menu = false;
                         in_game = true;
                     }
-                    if (mainMenuButtons[1]->checkIfPressed(event.button.x, event.button.y)) {
+                    if (mainMenuButtons[1]->CheckIfPressed(event.button.x, event.button.y)) {
                         in_main_menu = false;
                         entering_name = true;
                     }
-                    if (mainMenuButtons[2]->checkIfPressed(event.button.x, event.button.y)) {
+                    if (mainMenuButtons[2]->CheckIfPressed(event.button.x, event.button.y)) {
                         in_main_menu = false;
                         in_records = true;
                     }
-                    if (mainMenuButtons[3]->checkIfPressed(event.button.x, event.button.y)) {
+                    if (mainMenuButtons[3]->CheckIfPressed(event.button.x, event.button.y)) {
                         in_main_menu = false;
                         in_help_page = true;
                     }
-                    if (mainMenuButtons[4]->checkIfPressed(event.button.x, event.button.y)) {
+                    if (mainMenuButtons[4]->CheckIfPressed(event.button.x, event.button.y)) {
                         Res->SaveToFile();
 
                         in_main_menu = false;
@@ -228,13 +228,13 @@ void Game::handleEvents() {
             } break;
             case SDL_MOUSEBUTTONDOWN: {
                 if (event.button.button == SDL_BUTTON_LEFT) {
-                    if(recordsButtons[0]->checkIfPressed(event.button.x, event.button.y)) {
+                    if(recordsButtons[0]->CheckIfPressed(event.button.x, event.button.y)) {
                         Res->ClearList();
                     }
-                    if (recordsButtons[1]->checkIfPressed(event.button.x, event.button.y)) {
+                    if (recordsButtons[1]->CheckIfPressed(event.button.x, event.button.y)) {
                         Res->PrintList();
                     }
-                    if (recordsButtons[2]->checkIfPressed(event.button.x, event.button.y)) {
+                    if (recordsButtons[2]->CheckIfPressed(event.button.x, event.button.y)) {
                         in_records = false;
                         in_main_menu = true;
                     }
@@ -255,11 +255,11 @@ void Game::handleEvents() {
             } break;
             case SDL_MOUSEBUTTONDOWN: {
                 if (event.button.button == SDL_BUTTON_LEFT) {
-                    if (pauseButtons[0]->checkIfPressed(event.button.x, event.button.y)) {
+                    if (pauseButtons[0]->CheckIfPressed(event.button.x, event.button.y)) {
                         in_game = true;
                         paused = false;
                     }
-                    if (pauseButtons[1]->checkIfPressed(event.button.x, event.button.y)) {
+                    if (pauseButtons[1]->CheckIfPressed(event.button.x, event.button.y)) {
                         in_game = false;
                         in_main_menu = true;
                         paused = false;
@@ -289,7 +289,7 @@ void Game::handleEvents() {
         switch (event.type) {
             case SDL_MOUSEBUTTONDOWN: {
                 if (event.button.button == SDL_BUTTON_LEFT) {
-                    if (replayExitButtons[0]->checkIfPressed(event.button.x, event.button.y)) {
+                    if (replayExitButtons[0]->CheckIfPressed(event.button.x, event.button.y)) {
                         ResetGame();
                         player->ResetPlayer();
                         for (auto & ghost : ghosts) ghost->ResetGhost();
@@ -298,7 +298,7 @@ void Game::handleEvents() {
                         win = false;
                         lost = false;
                     }
-                    if (replayExitButtons[1]->checkIfPressed(event.button.x, event.button.y)) {
+                    if (replayExitButtons[1]->CheckIfPressed(event.button.x, event.button.y)) {
                         ResetGame();
                         player->ResetPlayer();
                         for (auto & ghost : ghosts) ghost->ResetGhost();
@@ -333,7 +333,7 @@ void Game::handleEvents() {
     }
 }
 
-void Game::update() {
+void Game::Update() {
     if (in_game) {
         player->UpdatePlayer();
 
@@ -358,8 +358,8 @@ void Game::update() {
         if (deathCooldown) deathCooldown--;
         if (ableToKill) ableToKill--;
     }
-    score->Update(50, 100, 700, 925, TextObject::score_toString(points));
-    scoreIfLost->Update(30, 60, 500, 365, TextObject::score_toString(points));
+    score->Update(50, 100, 700, 925, TextObject::ScoreToString(points));
+    scoreIfLost->Update(30, 60, 500, 365, TextObject::ScoreToString(points));
     playerNameBar->Update(60, nameBoxWidth, 420-nameBoxWidth/2, 465, playerName);
     nameBorder->Update(80, 660, 0, 0, 80, 670, 82, 451);
     for (int i = 0; i < 5; ++i) mainMenuButtonBorders[i]->Update(80, 400, 0, 0, 80, 400, 220, 300 + i*100);
@@ -367,19 +367,19 @@ void Game::update() {
     for (int i = 0; i < 2; ++i) replayExitButtonBorders[i]->Update(80, 400, 0, 0, 80, 400, 220, 420 + i*100);
     for (int i = 0; i < 3; ++i) recordsButtonBorders[i]->Update(80, 400, 0, 0, 80, 400, 220, 700 + i*100);
 
-    for (int i = 0; i < Res->records.size(); ++i) scoreBoard[0][i]->Update(30, 60, 20, 150+i*50, TextObject::score_toString(i+1));
-    for (int i = 0; i < Res->records.size(); ++i) scoreBoard[1][i]->Update(30, 90, 150, 150+i*50, TextObject::score_toString(Res->records[i].pts));
+    for (int i = 0; i < Res->records.size(); ++i) scoreBoard[0][i]->Update(30, 60, 20, 150+i*50, TextObject::ScoreToString(i+1));
+    for (int i = 0; i < Res->records.size(); ++i) scoreBoard[1][i]->Update(30, 90, 150, 150+i*50, TextObject::ScoreToString(Res->records[i].pts));
     for (int i = 0; i < Res->records.size(); ++i) scoreBoard[2][i]->Update(30, strlen(Res->records[i].name)*30, 300, 150 + i*50, Res->records[i].name);
 
     if (firstScreenTime) firstScreenTime--;
     if (playerNameSize == 0) entering_name = true;
 }
 
-void Game::render() {
+void Game::Render() {
     SDL_RenderClear(renderer);
 
     if (in_game || paused || win || lost) {
-        map->drawMap();
+        map->DrawMap();
         score->Render();
         for (int i = 0; i < lives; ++i) lives_list[i]->Render();
 
@@ -416,7 +416,7 @@ void Game::render() {
     SDL_RenderPresent(renderer);
 }
 
-void Game::clean() {
+void Game::Clean() {
     SDL_DestroyWindow(window);
     SDL_DestroyRenderer(renderer);
 

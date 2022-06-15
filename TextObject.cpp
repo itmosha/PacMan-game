@@ -28,7 +28,7 @@ void TextObject::Render() {
     SDL_RenderCopy(Game::renderer, textTexture, nullptr, &destRect);
 }
 
-char* TextObject::score_toString(int scr) {
+char* TextObject::ScoreToString(int scr) {
 
     char str_score[3] = {' ', ' ', ' '};
     int i = 2;
@@ -53,7 +53,7 @@ char* TextObject::score_toString(int scr) {
     return string_text;
 }
 
-char TextObject::event_to_char(SDL_Event event, int playerNameSize) {
+char TextObject::EventToChar(SDL_Event event) {
     char c = '!';
     switch (event.type) {
         case SDL_KEYDOWN: {
